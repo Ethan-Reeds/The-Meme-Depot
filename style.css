@@ -1,0 +1,17 @@
+/* site-wide stylesheet */
+
+body {
+	color: #000000;
+}
+
+.titlebar {
+	color: #FF0000;
+}
+
+.body {
+	color: #00FF00;
+}
+
+.footer {
+	color: #0000FF;
+}
