@@ -11,15 +11,14 @@ public class Login extends HttpServlet
         resp.setContentType("text/plain");
         var pw = resp.getWriter();
         var sess = req.getSession();
-        //var name = req.getParameter("name");
         var username = req.getParameter("username");
         var password = req.getParameter("password");
-        req.getSession().removeAttribute("username");
         if( password == null || username == null ){
             pw.printf("Null");
         } else {
             
-            if (sess.getAttribute(username) != null){
+            if (sess.getAttribute(username) != null || !AccountManager.verifyUser(username, password)){
+                // checks to see if you're already logged in or have an account
                 pw.printf("False");
             }
             else if (AccountManager.login(username,password)){
@@ -28,6 +27,7 @@ public class Login extends HttpServlet
                 pw.printf("True");
             }
             else{
+                // necessary for user input resasons
                 pw.println("IDK mane something went wrong, give it another go");
                 pw.println("False");
             }
