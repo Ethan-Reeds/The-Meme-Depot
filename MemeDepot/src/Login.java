@@ -24,9 +24,11 @@ public class Login extends HttpServlet
             }
             else if (AccountManager.login(username,password)){
                 sess.setAttribute("username", username );
+                pw.println("You are now logged in as:"+username);
                 pw.printf("True");
             }
             else{
+                pw.println("IDK mane something went wrong, give it another go");
                 pw.println("False");
             }
         }

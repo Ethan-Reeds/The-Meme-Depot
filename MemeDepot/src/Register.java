@@ -25,13 +25,14 @@ public class Register extends HttpServlet{
         if (username == null || password == null) {
             pw.println("Null");
         } else {
-            if( AccountManager.addUser(username, password) ){ 
-                //pw.println("Username:"+username);
-                //pw.println("Password:"+password);
+            if( AccountManager.addUser(username, password) ){
+                pw.println("Congrats you now have malware!");
+                pw.println("Username:"+username);
+                pw.println("Password:"+password);
                 pw.println("True"); 
             }
             else{
-                //pw.println("Could not register account");
+                pw.println("Sorry bruh somethin aint qutite right");
                 pw.println("False");
             }
         }    
