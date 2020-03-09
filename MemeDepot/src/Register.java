@@ -24,10 +24,13 @@ public class Register extends HttpServlet{
         var password = req.getParameter("password");
         if (username == null && password == null) {
             pw.println("No username or password provided");
+            pw.println("False");
         } else if (username == null && password != null){
             pw.println("No username provided");
+            pw.println("False");
         } else if (username != null && password == null) {
             pw.println("No password provided");
+            pw.println("False");
         } else {
             if( AccountManager.addUser(username, password) ){
                 pw.println("Congrats you now have malware!");
