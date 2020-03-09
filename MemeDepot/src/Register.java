@@ -20,10 +20,14 @@ public class Register extends HttpServlet{
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException{
         resp.setContentType("text/plain");
         var pw = resp.getWriter();
-        var username = req.getParameter("username");
+        var username = req.getParameter("username");    // username is email?
         var password = req.getParameter("password");
-        if (username == null || password == null) {
-            pw.println("Null");
+        if (username == null && password == null) {
+            pw.println("No username or password provided");
+        } else if (username == null && password != null){
+            pw.println("No username provided");
+        } else if (username != null && password == null) {
+            pw.println("No password provided");
         } else {
             if( AccountManager.addUser(username, password) ){
                 pw.println("Congrats you now have malware!");
@@ -32,7 +36,7 @@ public class Register extends HttpServlet{
                 pw.println("True"); 
             }
             else{
-                pw.println("Sorry bruh somethin aint qutite right");
+                pw.println("Sorry bruh somethin aint quite right");
                 pw.println("False");
             }
         }    
