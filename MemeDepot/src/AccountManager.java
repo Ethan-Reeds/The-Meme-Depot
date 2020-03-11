@@ -14,7 +14,10 @@ import java.util.function.BiConsumer;
  */
 public class AccountManager {
     
-    
+    // https://www.geeksforgeeks.org/java-util-hashmap-in-java-with-examples/
+    // https://www.geeksforgeeks.org/hashmap-containskey-method-in-java/
+    // https://www.geeksforgeeks.org/hashmap-get-method-in-java/
+    // https://www.geeksforgeeks.org/hashmap-put-method-in-java/
     protected static Map<String, Account> accountList = new HashMap<String,Account>();
     
     static AccountManager instance = new AccountManager();  // instance used for the integreation testing, called in /clear servlet
