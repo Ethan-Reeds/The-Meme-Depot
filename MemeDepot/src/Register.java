@@ -17,10 +17,12 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(urlPatterns={"/register"})
 public class Register extends HttpServlet{
+    
+    @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException{
         resp.setContentType("text/plain");
         var pw = resp.getWriter();
-        var username = req.getParameter("username");
+        var username = req.getParameter("email");
         var password = req.getParameter("password");
         if (username == null || password == null) {
             pw.println("Null");
@@ -36,6 +38,11 @@ public class Register extends HttpServlet{
                 pw.println("False");
             }
         }    
+    }
+    
+    @Override
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        doGet(req, resp);
     }
 
 }
