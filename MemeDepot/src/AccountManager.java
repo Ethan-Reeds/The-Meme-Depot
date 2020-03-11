@@ -43,32 +43,39 @@ public class AccountManager {
     } 
     
     public static boolean verifyUser(String username, String password){
-        return (accountList.get(username) != null);
-        // since all usernames must be unique checking the username is all that is needed?
-        
-        // https://stackoverflow.com/questions/40693845/hashmap-java-get-value-if-it-exists
-        // used this to see how to see if the key exists using .get() function
-    } 
+        // if username exists
+        if(accountList.containsKey(username)) {
+            // if password matches username
+            if(accountList.get(username).getPassword().equals(password)) {
+                // user exists and info matches
+                return true;
+            }
+        }
+        // user doesn't exist or info doesn't match
+        return false;
+    }
+    
     public static boolean addUser(String emailAddress, String Password){
+        // wrong email format
         if (emailAddress.split("@").length != 2){
             return false;
         }
-        if (!accountList.isEmpty()){
-            if (!verifyUser(emailAddress, Password)){
-                accountList.put(emailAddress, new Account(emailAddress,Password));
-                return true;
-            }
+        // user already exists
+        if(accountList.containsKey(emailAddress)) {
             return false;
         }
-        accountList.put(emailAddress, new Account(emailAddress,Password));
+        // add user
+        accountList.put(emailAddress, new Account(emailAddress, Password));
         return true;
     }
+    
     public int getUID(String username){
         // all users have an ID so if you get back -1 it means that the user is not in the database
-        if (accountList.get(username) != null)
+        if (accountList.containsKey(username))
             return accountList.get(username).getUserID();
         return -1;      // if user does not exist, wont let me return null or i would
     }
+    
     public String getEmail(int userID){
         //https://www.geeksforgeeks.org/iterate-map-java/
         // used this to see how to use the forEach() method
@@ -79,6 +86,7 @@ public class AccountManager {
             return acct.getUsername();
         return null;
     }
+    
     public boolean isAdmin(int userID){
         Account acct = getAccount(userID);
         if (acct != null)
@@ -95,10 +103,9 @@ public class AccountManager {
     
     public boolean setAvatar(int userID, byte[] img ){
         Account acct = getAccount(userID);
-        if (acct == null){
-            return false;
-        }
-        return acct.setAvatar(img);
+        if (acct != null)
+            return acct.setAvatar(img);
+        return false;
     }    
     
     private Account getAccount(int userID){
