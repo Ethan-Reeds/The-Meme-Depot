@@ -10,21 +10,23 @@
  * TODO make testing harness for this
  */
 public class Account {
-    protected String username;   // should be email address
+    protected String username;
     protected String password;
-    protected int userID;       // is assigned not given
-    protected static int nextID = 1000;
+    protected String email;
+    protected String birthdate;
+    protected String phone;
     protected boolean isAdmin;  // default is false you can set it to true
     protected byte[] avatar;    // default is to NULL;
     protected boolean loggedIn;
     
-    public Account(String usrName, String pswrd){
-        username = usrName;        // check for xxxxx@xxxxx
-        password = pswrd;
+    public Account(String Username, String Password, String Email, String Year, String Month, String Day, String Phone){
+        username = Username;        // check for xxxxx@xxxxx
+        password = Password;
+        email = Email;
+        birthdate = Year + "-" + Month + "-" + Day;
+        phone = Phone;
         isAdmin = false;
-        avatar = null;        
-        userID = nextID;
-        nextID++;
+        avatar = null;
     }    
     public String getUsername(){
         return username;
@@ -37,9 +39,6 @@ public class Account {
     }
     public String getPassword(){
         return password;
-    }
-    public int getUserID(){
-        return userID;
     }
     public boolean getIsAdmin(){
         return isAdmin;
@@ -56,3 +55,8 @@ public class Account {
     }
     
 }
+
+
+
+
+
