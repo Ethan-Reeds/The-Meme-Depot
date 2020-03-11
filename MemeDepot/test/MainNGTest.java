@@ -78,7 +78,21 @@ public class MainNGTest {
     @Test
     public void testRegisterNoArgs(){
         var response = fetch("/srv/register?");
-        assert(response.contains("Null"));
+        assert(response.contains("False"));
+    }
+    
+    // trying to register without a username
+    @Test
+    public void testRegisterNoUsername() {
+        var response = fetch("/srv/register?password=Marilyn");
+        assert(response.contains("False"));
+    }
+    
+    // trying to register without a password
+    @Test
+    public void testRegisterNoPassword() {
+        var response = fetch("/srv/register?username=JFK@mafia.com");
+        assert(response.contains("False"));
     }
     
     // trying to register an existing account
