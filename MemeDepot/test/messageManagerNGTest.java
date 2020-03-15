@@ -66,4 +66,27 @@ public class messageManagerNGTest {
         boolean result = mInstance.addMessage(message);
         assertEquals(result, expResult);
     }
+    
+    @Test
+    public void testGetMessages(){
+        System.out.println("getMessages");
+        messageManager mInstance = new messageManager();
+        // make accounts
+        Account sender = new Account("alecBaldwin@imGreat.com", "30Rock!");
+        Account reciever = new Account("markyMark@funkyBunch.com", "imAnActorN0w");
+        AccountManager.addUser(sender.username,sender.password);
+        AccountManager.addUser(reciever.username,sender.password);
+        //make messeges
+        Message message = new Message("hey do you want to be on 30 rock? lol", sender, reciever);
+        for(int i=0;i<1000;i++)
+        {;} // to make a time difference 
+        Message message2 = new Message("nah lol i work at whalburgers now", reciever, sender);
+        mInstance.addMessage(message);
+        mInstance.addMessage(message2);
+        //make the test
+        ArrayList<Message> expResult = new ArrayList<>();
+        expResult.add(message); expResult.add(message2);
+        ArrayList<Message> result = mInstance.getMessages(sender,reciever);
+        assertEquals(result, expResult);
+    }
 }

@@ -14,23 +14,21 @@ public class messageManager {
     // this one just keeps track of what messages associate with whichever account in no organized way
     // try to phase this one out
     
-    protected Map<Account,ArrayList<Message> > message_list = new HashMap<Account, ArrayList<Message>>();
+    protected Map<String,ArrayList<Message> > message_list = new HashMap<String, ArrayList<Message>>();
     // this will map an account to all of the messages associated with that account
     
     public boolean addMessage( Message message){
         // make sure both accounts exist, we know that the sender exist since theyre logged in
-        if (AccountManager.accountList.containsKey(message.sender.getUsername())){
-            if (AccountManager.accountList.containsKey(message.recipient.getUsername())){
-                //  https://stackoverflow.com/questions/12134687/how-to-add-element-into-arraylist-in-hashmap
+        if (AccountManager.accountList.containsKey(message.sender)){
+            if (AccountManager.accountList.containsKey(message.recipient)){
+              //https://stackoverflow.com/questions/7969286/java-how-to-add-values-to-array-list-used-as-value-in-hashmap/7969379
                 // found the above usefull when ran into a problem
-                List<Message>alist = message_list.get(message.sender);
-                List<Message>blist = message_list.get(message.sender);
-                if (alist == null)
-                    alist = new ArrayList<>();
-                if(blist == null)
-                    blist = new ArrayList<>();
-                alist.add(message);
-                blist.add(message);
+                if (message_list.get(message.sender) == null)
+                    message_list.put(message.sender, new ArrayList<>());
+                if (message_list.get(message.recipient) == null)
+                    message_list.put(message.recipient, new ArrayList<>());
+                message_list.get(message.sender).add(message);
+                message_list.get(message.recipient).add(message);
                 return true;
             }
             return false;
@@ -41,13 +39,13 @@ public class messageManager {
     public ArrayList<Message> getMessages(Account a, Account b){
         // this gathers all of the messages between person a and b
         ArrayList<Message> mList = new ArrayList<>();
-        for(Message m : message_list.get(a)){   // looping though person a's messages
-            if(m.sender == b)       // seeing if the sender or recipient of the message was from person b
-                mList.add(m);
-            else if(m.recipient == b)
+        for(Message m : message_list.get(a.getUsername())){
+            if(m.sender.equals(a.getUsername()) && m.recipient.equals(b.getUsername())
+                    || m.sender.equals(b.getUsername()) && m.recipient.equals(a.getUsername()))       // seeing if the sender or recipient of the message was from person b
                 mList.add(m);
         }
-        sortMessages(mList,0,mList.size()-1);   // sort based on time incase it got messed up
+        //sortMessages(mList,0,mList.size()-1);   // sort based on time incase it got messed up
+        // sorting it makes it go in the wrong order, but i dont think we need it
         return mList;   // make sure that its sorting
     }
     

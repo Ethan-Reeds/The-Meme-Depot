@@ -1,5 +1,36 @@
 
-
-.vert-line{
-	margin-left: 50%;
+body{
+	background-color: #ee7125;
 }
+
+ul{
+	list-style-type: none;
+}
+li{
+	padding: 1em;
+}
+.container{
+	background-color: #EEE;
+	margin-top: 3em;
+	padding: 5px;
+}
+
+#packet{
+	background-color: #EEE;
+	float: left;
+	width: 33%;
+	height: auto;
+}
+
+#chat{
+	background: #EEE;
+	float: right;
+	margin-right: 5em;
+}
+
+
+#footer{
+	clear: both;
+	text-align: center;
+}
+
