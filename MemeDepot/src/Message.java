@@ -18,7 +18,25 @@ public class Message {
     public String message;
     public Account sender;
     public Account recipient;
-    public Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // for organizing the messages
+    public Timestamp timestamp; // for organizing the messages
+    public long time_sort;  // used for quick sort sorting
+    
+    public Message(byte[] data,Account a,Account b){
+        message = null;
+        img = data;
+        sender = a;
+        recipient = b;
+        timestamp = new Timestamp(System.currentTimeMillis());
+        time_sort = timestamp.getTime();       
+    }
+    public Message(String data,Account a,Account b){
+        img = null;
+        message = data;
+        sender = a;
+        recipient = b;
+        timestamp = new Timestamp(System.currentTimeMillis());
+        time_sort = timestamp.getTime();       
+    }
     
     
     
