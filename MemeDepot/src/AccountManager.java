@@ -17,7 +17,8 @@ public class AccountManager {
     
     protected static Map<String, Account> accountList = new HashMap<String,Account>();
     
-    static AccountManager instance = new AccountManager();  // instance used for the integreation testing, called in /clear servlet
+    static AccountManager instance = new AccountManager();  // instance used for the integreation testing,
+                                                            // called in /clear servlet
     
     
     public static boolean login(String username, String password) {
@@ -48,21 +49,20 @@ public class AccountManager {
         
         // https://stackoverflow.com/questions/40693845/hashmap-java-get-value-if-it-exists
         // used this to see how to see if the key exists using .get() function
-    } 
-    public static boolean addUser(String emailAddress, String Password){
-        if (emailAddress.split("@").length != 2){
-            return false;
-        }
+    }
+    
+    public static boolean addUser(String username, String password, String email, String year, String month, String day, String phone){
         if (!accountList.isEmpty()){
-            if (!verifyUser(emailAddress, Password)){
-                accountList.put(emailAddress, new Account(emailAddress,Password));
+            if (!verifyUser(username, password)){
+                accountList.put(username, new Account(username, password, email, year, month, day, phone));
                 return true;
             }
             return false;
         }
-        accountList.put(emailAddress, new Account(emailAddress,Password));
+        accountList.put(username, new Account(username, password, email, year, month, day, phone));
         return true;
     }
+  
     public static ArrayList<String> searchForUser(String Username){
         //Looks through the HashMap for a username that best matches the search 
         String user = null;
@@ -99,54 +99,51 @@ public class AccountManager {
         return bestMatchs;
         
     }
-    public int getUID(String username){
-        // all users have an ID so if you get back -1 it means that the user is not in the database
-        if (accountList.get(username) != null)
-            return accountList.get(username).getUserID();
-        return -1;      // if user does not exist, wont let me return null or i would
-    }
-    public String getEmail(int userID){
+    
+    public String getUser(String username){
         //https://www.geeksforgeeks.org/iterate-map-java/
         // used this to see how to use the forEach() method
-        // turns out you cant return out of the forEach method for maps 
+        // turns out you cant return out of the forEach method for maps
         // so Andy showed me an example of using a for each loop to go through a map
-        Account acct = getAccount(userID);
+        Account acct = getAccount(username);
         if (acct != null)
             return acct.getUsername();
         return null;
     }
-    public boolean isAdmin(int userID){
-        Account acct = getAccount(userID);
+    
+    public boolean isAdmin(String username){
+        Account acct = getAccount(username);
         if (acct != null)
             return acct.getIsAdmin();
         return false;
     }
     
-    public byte[] getAvatar(int userID ){
-        Account acct = getAccount(userID);
+    public byte[] getAvatar(String username){
+        Account acct = getAccount(username);
         if (acct != null)
             return acct.getAvatar();
         return null;
     }
     
-    public boolean setAvatar(int userID, byte[] img ){
-        Account acct = getAccount(userID);
+    public boolean setAvatar(String username, byte[] img ){
+        Account acct = getAccount(username);
         if (acct == null){
             return false;
         }
         return acct.setAvatar(img);
     }    
     
-    private Account getAccount(int userID){
+    private Account getAccount(String username){
         for( Account a : accountList.values()){
-            if (a.getUserID() == userID){
+            if (a.getUsername().equals(username)){
                 return a;
             }
         }
+        
         return null;
     }
+    
     static void clear() {
         accountList.clear(); 
-        Account.nextID = 1000; 
     }
 }

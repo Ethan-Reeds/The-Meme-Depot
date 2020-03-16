@@ -1,5 +1,5 @@
-
 import java.io.IOException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,23 +15,45 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Ethan Reeds
  */
+
 @WebServlet(urlPatterns={"/register"})
+@MultipartConfig
 public class Register extends HttpServlet{
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException{
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException{
         resp.setContentType("text/plain");
         var pw = resp.getWriter();
         var username = req.getParameter("username");
         var password = req.getParameter("password");
-        if (username == null || password == null) {
-            pw.println("Null");
+        var email = req.getParameter("email");
+        var year = req.getParameter("year");
+        var month = req.getParameter("month");
+        var day = req.getParameter("day");
+        var phone = req.getParameter("phone");
+        
+        if (username == null && password == null) {
+            pw.println("No username or password provided");
+            pw.println("False");
+        } else if (username == null && password != null){
+            pw.println("No username provided");
+            pw.println("False");
+        } else if (username != null && password == null) {
+            pw.println("No password provided");
+            pw.println("False");
         } else {
-            if( AccountManager.addUser(username, password) ){
+            //Check for duplicate username
+            if(AccountManager.instance.getUser(username) != null) {
+                resp.sendError(409, "duplicate username");
+                return;
+            }
+            
+            if(AccountManager.addUser(username, password, email, year, month, day, phone)) {
                 pw.println("Congrats you now have malware!");
                 pw.println("Username:"+username);
                 pw.println("Password:"+password);
+                pw.println("<br>");
                 pw.println("True"); 
             }
-            else{
+            else {
                 pw.println("Sorry bruh somethin aint qutite right");
                 pw.println("False");
             }
@@ -39,4 +61,6 @@ public class Register extends HttpServlet{
     }
 
 }
+
+
 

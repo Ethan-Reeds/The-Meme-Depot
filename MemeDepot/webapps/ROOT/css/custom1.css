@@ -1,0 +1,8 @@
+#logoText {
+    font-weight : bold; 
+    color : black;
+}
+
+#logoText:hover {
+    color : grey; 
+}
