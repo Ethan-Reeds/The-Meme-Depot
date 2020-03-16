@@ -62,6 +62,43 @@ public class AccountManager {
         accountList.put(username, new Account(username, password, email, year, month, day, phone));
         return true;
     }
+  
+    public static ArrayList<String> searchForUser(String Username){
+        //Looks through the HashMap for a username that best matches the search 
+        String user = null;
+        ArrayList<String> bestMatchs = new ArrayList<String>();
+        Iterator accountIterator = accountList.entrySet().iterator();
+        while(accountIterator.hasNext()){
+            Map.Entry mapElement = (Map.Entry)accountIterator.next();
+            user = (String)mapElement.getKey();
+            if(accountList.get(user).getLoggedIn()==false)
+            {
+                if(Username.charAt(0)== user.charAt(0))
+                {
+                    bestMatchs.add(user);
+                }
+            }
+        }
+        if(Username.length()>1 && !bestMatchs.isEmpty())
+        {
+            for(int i = 1; i< Username.length();i++)
+            {
+                ArrayList<String> temp = new ArrayList<String>();
+                for(int j = 0; j< bestMatchs.size();j++)
+                {
+                    if(Username.charAt(i) == bestMatchs.get(j).charAt(i))
+                    {
+                        temp.add(bestMatchs.get(j));
+                    }
+                }
+                bestMatchs = temp;
+                
+            }
+            
+        }
+        return bestMatchs;
+        
+    }
     
     public String getUser(String username){
         //https://www.geeksforgeeks.org/iterate-map-java/
