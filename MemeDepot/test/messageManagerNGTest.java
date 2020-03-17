@@ -68,7 +68,7 @@ public class messageManagerNGTest {
     }
     
     @Test
-    public void testGetMessages(){
+    public void testGetMessages_text(){
         System.out.println("getMessages");
         messageManager mInstance = new messageManager();
         // make accounts
@@ -81,6 +81,54 @@ public class messageManagerNGTest {
         for(int i=0;i<1000;i++)
         {;} // to make a time difference 
         Message message2 = new Message("nah lol i work at whalburgers now", reciever, sender);
+        mInstance.addMessage(message);
+        mInstance.addMessage(message2);
+        //make the test
+        ArrayList<Message> expResult = new ArrayList<>();
+        expResult.add(message); expResult.add(message2);
+        ArrayList<Message> result = mInstance.getMessages(sender,reciever);
+        assertEquals(result, expResult);
+    }
+    
+    @Test
+    public void testGetMessages_img(){
+        System.out.println("getMessages");
+        messageManager mInstance = new messageManager();
+        // make accounts
+        Account sender = new Account("alecBaldwin@imGreat.com", "30Rock!");
+        Account reciever = new Account("markyMark@funkyBunch.com", "imAnActorN0w");
+        AccountManager.addUser(sender.username,sender.password);
+        AccountManager.addUser(reciever.username,sender.password);
+        //make messeges for byte arrays
+        byte[] img1 = {4,4,6,3,4,9,7,6,1,9,3};
+        byte[] img2 = {2,5,7,5,4,2,5,8};
+        Message message = new Message(img1, sender, reciever);
+        for(int i=0;i<1000;i++)
+        {;} // to make a time difference 
+        Message message2 = new Message(img2, reciever, sender);
+        mInstance.addMessage(message);
+        mInstance.addMessage(message2);
+        //make the test
+        ArrayList<Message> expResult = new ArrayList<>();
+        expResult.add(message); expResult.add(message2);
+        ArrayList<Message> result = mInstance.getMessages(sender,reciever);
+        assertEquals(result, expResult);
+    }
+       @Test
+        public void testGetMessages_img_text(){
+        System.out.println("getMessages");
+        messageManager mInstance = new messageManager();
+        // make accounts
+        Account sender = new Account("alecBaldwin@imGreat.com", "30Rock!");
+        Account reciever = new Account("markyMark@funkyBunch.com", "imAnActorN0w");
+        AccountManager.addUser(sender.username,sender.password);
+        AccountManager.addUser(reciever.username,sender.password);
+        //make messeges for byte arrays
+        byte[] img1 = {4,4,6,3,4,9,7,6,1,9,3};
+        Message message = new Message(img1, sender, reciever);
+        for(int i=0;i<1000;i++)
+        {;} // to make a time difference 
+        Message message2 = new Message("lmao funny pick bro", reciever, sender);
         mInstance.addMessage(message);
         mInstance.addMessage(message2);
         //make the test

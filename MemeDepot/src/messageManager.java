@@ -14,10 +14,10 @@ public class messageManager {
     // this one just keeps track of what messages associate with whichever account in no organized way
     // try to phase this one out
     
-    protected Map<String,ArrayList<Message> > message_list = new HashMap<String, ArrayList<Message>>();
+    protected static Map<String,ArrayList<Message> > message_list = new HashMap<String, ArrayList<Message>>();
     // this will map an account to all of the messages associated with that account
     
-    public boolean addMessage( Message message){
+    public static boolean addMessage( Message message){
         // make sure both accounts exist, we know that the sender exist since theyre logged in
         if (AccountManager.accountList.containsKey(message.sender)){
             if (AccountManager.accountList.containsKey(message.recipient)){
@@ -36,7 +36,7 @@ public class messageManager {
          return false; 
     }
     
-    public ArrayList<Message> getMessages(Account a, Account b){
+    public static ArrayList<Message> getMessages(Account a, Account b){
         // this gathers all of the messages between person a and b
         ArrayList<Message> mList = new ArrayList<>();
         for(Message m : message_list.get(a.getUsername())){
