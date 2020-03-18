@@ -49,6 +49,9 @@ public class messageManager {
         return mList;   // make sure that its sorting
     }
     
+    public static void clearList(){
+        message_list.clear();
+    }
 
     // quick sort, might be useful in other areas as well
     public void  sortMessages(ArrayList<Message> list, int low, int high){

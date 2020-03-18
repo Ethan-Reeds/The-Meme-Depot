@@ -31,6 +31,7 @@ public class messageManagerNGTest {
 
     @BeforeMethod
     public void setUpMethod() throws Exception {
+        messageManager.clearList();
     }
 
     @AfterMethod
