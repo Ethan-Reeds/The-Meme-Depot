@@ -35,7 +35,7 @@ public class privateMessage_txt {
         resp.setContentType("text/plain");
         var pw = resp.getWriter();
         for (Message m : mList){
-            pw.print(m.message);
+            pw.println(m.message);
         }
     }
 }
