@@ -2,7 +2,71 @@
 
 let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-$(document).ready(function() {
+//Setup the dropdowns with data
+$(document).ready(setup);
+
+//Allows using ajax to submit, but still uses the default
+//html validation first
+$("#registerForm").submit(function(e) {
+    //Prevents the form submission, but allows default validation
+    e.preventDefault();
+
+    let username = $("#usernameInput").val();
+    let password = $("#passInput").val();
+    let email = $("#emailInput").val();
+    let phoneNumber = $("#phoneInput").val();
+
+    let day = $("#daySelect").val();
+    let month = $("#monthSelect").val();
+    let year = $("#yearSelect").val();
+
+    console.log("Username: " + username + " Password: " + password);
+
+    let formData = new FormData();
+
+    formData.append("username", username);
+    formData.append("password", password);
+    formData.append("email", email);
+    formData.append("phone", phoneNumber);
+
+    formData.append("day", day);
+    formData.append("month", month);
+    formData.append("year", year);
+
+    $.ajax({
+
+        type: "POST",
+        url: "/srv/register",
+        data: formData,
+        contentType: false, 
+        processData: false,
+        success: (data) => {
+            //$("#statusdiv").html("Server said this: "+data);
+            signupSuccess(data);
+        },
+        error: (xhr,status,err) => {
+            if(xhr.responseText.includes("duplicate username")) {
+                duplicateUsername();
+            }
+            else {
+                $("#statusdiv").html("Something went wrong: status="+status+" err="+err+" resp=");
+            }
+        }
+
+    });
+});
+
+function duplicateUsername() {
+    $("#dialog").dialog({title : "Username taken"});
+    $("#dialog").html("That username is already taken.");
+}
+
+function signupSuccess(data) {
+    $("#dialog").dialog({title : "Success!"});
+    $("#dialog").html(data);
+}
+
+function setup() {
     //Setup the birth date selection
     let monthDropdown = $("#monthSelect");
     let dayDropdown = $("#daySelect");
@@ -30,30 +94,14 @@ $(document).ready(function() {
 
         yearDropdown.append(opt);
     }
-
-    //Validate the whole date whenever one changes
-    monthDropdown.change(validateDate);
-    dayDropdown.change(validateDate);
-    yearDropdown.change(validateDate);
-    
-    
-    //Password hiding
-    let passwordButton = $("#showPassword");
-
-    passwordButton.mousedown(function() {
-        $("#passInput").attr("type", "text");
-    });
-
-    passwordButton.mouseleave(hidePassword);
-    passwordButton.mouseup(hidePassword);
-    
-
-
-    passwordButton.rele
-});
+}
 
 function hidePassword() {
     $("#passInput").attr("type", "password");
+}
+
+function showPassword() {
+    $("#passInput").attr("type", "text");
 }
 
 function validateDate() {

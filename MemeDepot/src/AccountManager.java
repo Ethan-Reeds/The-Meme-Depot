@@ -14,7 +14,10 @@ import java.util.function.BiConsumer;
  */
 public class AccountManager {
     
-    
+    // https://www.geeksforgeeks.org/java-util-hashmap-in-java-with-examples/
+    // https://www.geeksforgeeks.org/hashmap-containskey-method-in-java/
+    // https://www.geeksforgeeks.org/hashmap-get-method-in-java/
+    // https://www.geeksforgeeks.org/hashmap-put-method-in-java/
     protected static Map<String, Account> accountList = new HashMap<String,Account>();
     
     static AccountManager instance = new AccountManager();  // instance used for the integreation testing,
@@ -44,6 +47,40 @@ public class AccountManager {
     } 
     
     public static boolean verifyUser(String username, String password){
+        // if username exists
+        if(accountList.containsKey(username)) {
+            // if password matches username
+            if(accountList.get(username).getPassword().equals(password)) {
+                // user exists and info matches
+                return true;
+            }
+        }
+        // user doesn't exist or info doesn't match
+        return false;
+    }
+    
+    public static boolean addUser(String emailAddress, String Password){
+        // wrong email format
+        if (emailAddress.split("@").length != 2){
+            return false;
+        }
+        // user already exists
+        if(accountList.containsKey(emailAddress)) {
+            return false;
+        }
+        // add user
+        accountList.put(emailAddress, new Account(emailAddress, Password));
+        return true;
+    }
+    
+    public int getUID(String username){
+        // all users have an ID so if you get back -1 it means that the user is not in the database
+        if (accountList.containsKey(username))
+            return accountList.get(username).getUserID();
+        return -1;      // if user does not exist, wont let me return null or i would
+    }
+    
+    public String getEmail(int userID){
         return (accountList.get(username) != null);
         // since all usernames must be unique checking the username is all that is needed?
         
@@ -61,6 +98,43 @@ public class AccountManager {
         }
         accountList.put(username, new Account(username, password, email, year, month, day, phone));
         return true;
+    }
+  
+    public static ArrayList<String> searchForUser(String Username){
+        //Looks through the HashMap for a username that best matches the search 
+        String user = null;
+        ArrayList<String> bestMatchs = new ArrayList<String>();
+        Iterator accountIterator = accountList.entrySet().iterator();
+        while(accountIterator.hasNext()){
+            Map.Entry mapElement = (Map.Entry)accountIterator.next();
+            user = (String)mapElement.getKey();
+            if(accountList.get(user).getLoggedIn()==false)
+            {
+                if(Username.charAt(0)== user.charAt(0))
+                {
+                    bestMatchs.add(user);
+                }
+            }
+        }
+        if(Username.length()>1 && !bestMatchs.isEmpty())
+        {
+            for(int i = 1; i< Username.length();i++)
+            {
+                ArrayList<String> temp = new ArrayList<String>();
+                for(int j = 0; j< bestMatchs.size();j++)
+                {
+                    if(Username.charAt(i) == bestMatchs.get(j).charAt(i))
+                    {
+                        temp.add(bestMatchs.get(j));
+                    }
+                }
+                bestMatchs = temp;
+                
+            }
+            
+        }
+        return bestMatchs;
+        
     }
     
     public String getUser(String username){
@@ -90,10 +164,9 @@ public class AccountManager {
     
     public boolean setAvatar(String username, byte[] img ){
         Account acct = getAccount(username);
-        if (acct == null){
-            return false;
-        }
-        return acct.setAvatar(img);
+        if (acct != null)
+            return acct.setAvatar(img);
+        return false;
     }    
     
     private Account getAccount(String username){

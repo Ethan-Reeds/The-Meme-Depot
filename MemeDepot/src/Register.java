@@ -1,4 +1,5 @@
 import java.io.IOException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 
 @WebServlet(urlPatterns={"/register"})
+@MultipartConfig
 public class Register extends HttpServlet{
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException{
         resp.setContentType("text/plain");
@@ -27,6 +29,7 @@ public class Register extends HttpServlet{
         var month = req.getParameter("month");
         var day = req.getParameter("day");
         var phone = req.getParameter("phone");
+        
         if (username == null && password == null) {
             pw.println("No username or password provided");
             pw.println("False");
@@ -37,10 +40,17 @@ public class Register extends HttpServlet{
             pw.println("No password provided");
             pw.println("False");
         } else {
+            //Check for duplicate username
+            if(AccountManager.instance.getUser(username) != null) {
+                resp.sendError(409, "duplicate username");
+                return;
+            }
+            
             if(AccountManager.addUser(username, password, email, year, month, day, phone)) {
                 pw.println("Congrats you now have malware!");
                 pw.println("Username:"+username);
                 pw.println("Password:"+password);
+                pw.println("<br>");
                 pw.println("True"); 
             }
             else {
