@@ -45,10 +45,10 @@ public class messageManagerNGTest {
     public void testAddMessage_string_messege() {
         System.out.println("addMessage_string");
         messageManager mInstance = new messageManager();
-        Account sender = new Account("alecBaldwin@imGreat.com", "30Rock!");
-        Account reciever = new Account("markyMark@funkyBunch.com", "imAnActorN0w");
-        AccountManager.addUser(sender.username,sender.password);
-        AccountManager.addUser(reciever.username,sender.password);
+        Account sender = new Account("alecBaldwin@imGreat.com", "30Rock!","alecBaldwin@imGreat.com","220","04","20","12323234");
+        Account reciever = new Account("markyMark@funkyBunch.com", "imAnActorN0w", "markyMark@funkyBunch.com","2343","02","35","394858783");
+        AccountManager.addUser(sender.username,sender.password,sender.email,"220","04","20","12323234");
+        AccountManager.addUser(reciever.username,sender.password,reciever.email,"2343","02","35","394858783");
         Message message = new Message("hey do you want to be on 30 rock? lol", sender, reciever);
         boolean expResult = true;
         boolean result = mInstance.addMessage(message);
@@ -58,10 +58,10 @@ public class messageManagerNGTest {
     public void testAddMessage_img_messege() {
         System.out.println("addMessage_img");
         messageManager mInstance = new messageManager();
-        Account sender = new Account("alecBaldwin@imGreat.com", "30Rock!");
-        Account reciever = new Account("markyMark@funkyBunch.com", "imAnActorN0w");
-        AccountManager.addUser(sender.username,sender.password);
-        AccountManager.addUser(reciever.username,sender.password);
+        Account sender = new Account("alecBaldwin@imGreat.com", "30Rock!","alecBaldwin@imGreat.com","220","04","20","12323234");
+        Account reciever = new Account("markyMark@funkyBunch.com", "imAnActorN0w", "markyMark@funkyBunch.com","2343","02","35","394858783");
+        AccountManager.addUser(sender.username,sender.password,sender.email,"220","04","20","12323234");
+        AccountManager.addUser(reciever.username,sender.password,reciever.email,"2343","02","35","394858783");
         Message message = new Message("hey do you want to be on 30 rock? lol", sender, reciever);
         boolean expResult = true;
         boolean result = mInstance.addMessage(message);
@@ -73,10 +73,10 @@ public class messageManagerNGTest {
         System.out.println("getMessages");
         messageManager mInstance = new messageManager();
         // make accounts
-        Account sender = new Account("alecBaldwin@imGreat.com", "30Rock!");
-        Account reciever = new Account("markyMark@funkyBunch.com", "imAnActorN0w");
-        AccountManager.addUser(sender.username,sender.password);
-        AccountManager.addUser(reciever.username,sender.password);
+        Account sender = new Account("alecBaldwin@imGreat.com", "30Rock!","alecBaldwin@imGreat.com","220","04","20","12323234");
+        Account reciever = new Account("markyMark@funkyBunch.com", "imAnActorN0w", "markyMark@funkyBunch.com","2343","02","35","394858783");
+        AccountManager.addUser(sender.username,sender.password,sender.email,"220","04","20","12323234");
+        AccountManager.addUser(reciever.username,sender.password,reciever.email,"2343","02","35","394858783");
         //make messeges
         Message message = new Message("hey do you want to be on 30 rock? lol", sender, reciever);
         for(int i=0;i<1000;i++)
@@ -96,10 +96,10 @@ public class messageManagerNGTest {
         System.out.println("getMessages");
         messageManager mInstance = new messageManager();
         // make accounts
-        Account sender = new Account("alecBaldwin@imGreat.com", "30Rock!");
-        Account reciever = new Account("markyMark@funkyBunch.com", "imAnActorN0w");
-        AccountManager.addUser(sender.username,sender.password);
-        AccountManager.addUser(reciever.username,sender.password);
+        Account sender = new Account("alecBaldwin@imGreat.com", "30Rock!","alecBaldwin@imGreat.com","220","04","20","12323234");
+        Account reciever = new Account("markyMark@funkyBunch.com", "imAnActorN0w", "markyMark@funkyBunch.com","2343","02","35","394858783");
+        AccountManager.addUser(sender.username,sender.password,sender.email,"220","04","20","12323234");
+        AccountManager.addUser(reciever.username,sender.password,reciever.email,"2343","02","35","394858783");
         //make messeges for byte arrays
         byte[] img1 = {4,4,6,3,4,9,7,6,1,9,3};
         byte[] img2 = {2,5,7,5,4,2,5,8};
@@ -120,10 +120,10 @@ public class messageManagerNGTest {
         System.out.println("getMessages");
         messageManager mInstance = new messageManager();
         // make accounts
-        Account sender = new Account("alecBaldwin@imGreat.com", "30Rock!");
-        Account reciever = new Account("markyMark@funkyBunch.com", "imAnActorN0w");
-        AccountManager.addUser(sender.username,sender.password);
-        AccountManager.addUser(reciever.username,sender.password);
+        Account sender = new Account("alecBaldwin@imGreat.com", "30Rock!","alecBaldwin@imGreat.com","220","04","20","12323234");
+        Account reciever = new Account("markyMark@funkyBunch.com", "imAnActorN0w", "markyMark@funkyBunch.com","2343","02","35","394858783");
+        AccountManager.addUser(sender.username,sender.password,sender.email,"220","04","20","12323234");
+        AccountManager.addUser(reciever.username,sender.password,reciever.email,"2343","02","35","394858783");
         //make messeges for byte arrays
         byte[] img1 = {4,4,6,3,4,9,7,6,1,9,3};
         Message message = new Message(img1, sender, reciever);
