@@ -59,20 +59,6 @@ public class AccountManager {
         return false;
     }
     
-    public static boolean addUser(String emailAddress, String Password){
-        // wrong email format
-        if (emailAddress.split("@").length != 2){
-            return false;
-        }
-        // user already exists
-        if(accountList.containsKey(emailAddress)) {
-            return false;
-        }
-        // add user
-        accountList.put(emailAddress, new Account(emailAddress, Password));
-        return true;
-    }
-    
     public int getUID(String username){
         // all users have an ID so if you get back -1 it means that the user is not in the database
         if (accountList.containsKey(username))
@@ -80,8 +66,10 @@ public class AccountManager {
         return -1;      // if user does not exist, wont let me return null or i would
     }
     
-    public String getEmail(int userID){
-        return (accountList.get(username) != null);
+    ///Returns null if no email
+    public String getEmail(String username){
+        String email = accountList.get(username).getEmail();
+        return email;
         // since all usernames must be unique checking the username is all that is needed?
         
         // https://stackoverflow.com/questions/40693845/hashmap-java-get-value-if-it-exists
