@@ -20,9 +20,10 @@ public class pm_txt {
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException{
         resp.setContentType("text/plain");
         var pw = resp.getWriter();
+        var sess = req.getSession();
         
         // building the message/adding the message to manager
-        String from = req.getParameter("from");
+        String from = sess.getAttribute("username").toString(); // no idea if this will work
         String to = req.getParameter("to");     // handle input errors with jquery
         String msg = req.getParameter("message");
         

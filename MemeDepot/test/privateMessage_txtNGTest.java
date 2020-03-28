@@ -50,6 +50,15 @@ public class privateMessage_txtNGTest {
     public void Clear(){
         fetch("/srv/clear");
     }
+    
+    @BeforeMethod
+    public void make_accts(){
+        messageManager mInstance = new messageManager();
+        Account acct1 = new Account("alecBaldwin@imGreat.com", "30Rock!","alecBaldwin@imGreat.com","220","04","20","12323234");
+        Account acct2 = new Account("markyMark@funkyBunch.com", "imAnActorN0w", "markyMark@funkyBunch.com","2343","02","35","394858783");
+        AccountManager.addUser(acct1.username,acct1.password,acct1.email,"220","04","20","12323234");
+        AccountManager.addUser(acct2.username,acct2.password,acct2.email,"2343","02","35","394858783");
+    }
         
     static String fetch(String... allurls) {
         try {
@@ -74,20 +83,19 @@ public class privateMessage_txtNGTest {
     @Test
     public void everything_correct() throws Exception {
         System.out.println("everything_correct");
-        HttpServletRequest req = null;
-        HttpServletResponse resp = null;
-        privateMessage_txt instance = new privateMessage_txt();
-        instance.doPost(req, resp);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        // servlet handles creating the message and getting the accounts
+        fetch("/srv/login?username=alecBaldwin@imGreat.com&password=30Rock!");
+        // logged in so that the session can check for the username to find the correct account
+        var response = fetch("/srv/pm_txt?to=markyMark@funkyBunch.com&message=hey+do+you+want+to+be+on+30+rock?+lol");
+        assert(response.contains("hey+do+you+want+to+be+on+30+rock?+lol"));
     }
     @Test
     public void recipient_doesnt_exist() throws Exception {
         System.out.println("recipient_doesnt_exist");
         HttpServletRequest req = null;
         HttpServletResponse resp = null;
-        privateMessage_txt instance = new privateMessage_txt();
-        instance.doPost(req, resp);
+        pm_txt instance = new pm_txt();
+        //instance.doPost(req, resp);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
@@ -96,8 +104,8 @@ public class privateMessage_txtNGTest {
         System.out.println("incorrect_parameters");
         HttpServletRequest req = null;
         HttpServletResponse resp = null;
-        privateMessage_txt instance = new privateMessage_txt();
-        instance.doPost(req, resp);
+        pm_txt instance = new pm_txt();
+        //instance.doPost(req, resp);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }

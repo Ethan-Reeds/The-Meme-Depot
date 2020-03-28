@@ -1,24 +1,23 @@
 "use strict";
 
-function submitForm(){
-    let name = $("#user").val();
-    let pobox = $("#pobox").prop("checked");
-    let state = $("#state").val();
+function sendMessage(){
+    let to = $("#username").val();
+    // from will be handled by the servlet by checking the session to see who is logged in
+    let message = $("#message").val();
     
     let fdata = new FormData();
 
-    fdata.append("name",name);
-    fdata.append("pobox",pobox);
-    fdata.append("state",state);
+    fdata.append("to",to);
+    fdata.append("message",message);
 
     $.ajax({
         type: "POST",
-        url: "/srv/formtest",
+        url: "/srv/pm_txt",
         data: fdata,
         contentType: false, 
         processData: false,
         success: (data) => {
-            $("#statusdiv").html("Server said this: "+data);
+            $("#statusdiv").html("Response: "+data);
         },
         error: (xhr,status,err) => {
             $("#statusdiv").html("Something went wrong: status="+status+" err="+err);
@@ -27,3 +26,5 @@ function submitForm(){
     });
 
 }
+
+// somehow make the accounts show up in the unorganized list
