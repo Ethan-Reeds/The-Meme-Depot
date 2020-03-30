@@ -33,16 +33,18 @@ public class UserPage extends HttpServlet {
         String pathInfo = req.getPathInfo();
         
         //No user given
-        if(pathInfo == null) {
-            doesNotExist(output);
+        //First part accounts for /user Second for /user/
+        if(pathInfo == null || pathInfo.length() == 1) {
+            output.write("No parameters given");
             return;
         }
         
         String[] pathParams = pathInfo.split("/");
         
         //Too many parameters given
-        if(pathParams.length != 2) {
-            doesNotExist(output);
+        //Second part accounts for a / with nothing after it not being an error
+        if(pathParams.length > 2 && !pathParams[2].isEmpty()) {
+            output.write("Too many parameters");
             return;
         }
         
@@ -52,7 +54,7 @@ public class UserPage extends HttpServlet {
         
         //Requested account does not exist
         if(account == null) {
-            doesNotExist(output);
+            output.write("That account does not exist");
             return;
         }
         
@@ -61,10 +63,6 @@ public class UserPage extends HttpServlet {
         
         RequestDispatcher dispatcher = req.getRequestDispatcher("/user.jsp");
         dispatcher.forward(req, resp);
-    }
-    
-    void doesNotExist(PrintWriter output) {
-        output.write("That page does not exist");
     }
     
 }

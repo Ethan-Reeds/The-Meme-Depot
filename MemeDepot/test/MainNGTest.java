@@ -39,6 +39,7 @@ public class MainNGTest {
     public static void teardown() {
         Main.startOrStopJetty(false);
     }
+    
     @BeforeMethod
     public void Clear(){
         TestUtility.fetch("/srv/clear");
