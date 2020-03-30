@@ -5,6 +5,7 @@
  */
 import java.net.CookieHandler;
 import java.net.CookieManager;
+import static org.testng.Assert.*;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -48,28 +49,28 @@ public class MainNGTest {
     @Test
     public void testRegister(){
         var response = TestUtility.post("/srv/register", "username=JFK@mafia.com", "password=Marilyn");
-        assert(response.contains("True"));
+        assertTrue(response.contains("True"));        
     }
     
     // trying to register withoug using any arguments
     @Test
     public void testRegisterNoArgs(){
         var response = TestUtility.post("/srv/register");
-        assert(response.contains("False"));
+        assertTrue(response.contains("False"));
     }
     
     // trying to register without a username
     @Test
     public void testRegisterNoUsername() {
         var response = TestUtility.post("/srv/register", "password=Marilyn");
-        assert(response.contains("False"));
+        assertTrue(response.contains("False"));
     }
     
     // trying to register without a password
     @Test
     public void testRegisterNoPassword() {
         var response = TestUtility.post("/srv/register", "username=JFK@mafia.com");
-        assert(response.contains("False"));
+        assertTrue(response.contains("False"));
     }
     
     // trying to register an existing account
@@ -77,20 +78,20 @@ public class MainNGTest {
     public void testRegisterExisting(){
         TestUtility.post("/srv/register", "username=JFK@mafia.com", "password=Marilyn");
         var response = TestUtility.post("/srv/register", "username=JFK@mafia.com", "password=Marilyn");
-        assert(response.contains("duplicate username"));
+        assertTrue(response.contains("duplicate username"));
     }
     
     // trying to register with an email that is not "syntacticaly" an email
     @Test
     public void testRegisterBadEmail(){
         var response = TestUtility.post("/srv/register", "username=JFK", "password=Marilyn", "email=Cow");
-        assert(response.contains("False"));
+        assertTrue(response.contains("False"));
         response = TestUtility.post("/srv/register", "username=JFK", "password=Marilyn", "email=Cow@");
-        assert(response.contains("False"));
+        assertTrue(response.contains("False"));
         response = TestUtility.post("/srv/register", "username=JFK", "password=Marilyn", "email=@");
-        assert(response.contains("False"));
+        assertTrue(response.contains("False"));
         response = TestUtility.post("/srv/register", "username=JFK", "password=Marilyn", "email=@Cow");
-        assert(response.contains("False"));
+        assertTrue(response.contains("False"));
     }
     
     // ############# LOGIN ###############
@@ -99,7 +100,7 @@ public class MainNGTest {
     public void Login() {   
         TestUtility.post("/srv/register", "username=JFK@mafia.com", "password=Marilyn");
         var response = TestUtility.fetch("/srv/login?username=JFK@mafia.com&password=Marilyn");
-        assert(response.contains("True"));
+        assertTrue(response.contains("True"));
     }
     
     // login but with no arguments
@@ -107,7 +108,7 @@ public class MainNGTest {
     public void LoginNoArgs() {
         TestUtility.post("/srv/register", "username=JFK@mafia.com", "password=Marilyn");
         var response = TestUtility.fetch("/srv/login?");
-        assert(response.contains("Null"));
+        assertTrue(response.contains("Null"));
     }
     
     // login but using the wrong password
@@ -115,7 +116,7 @@ public class MainNGTest {
     public void LoginWrongPassword() {
         TestUtility.post("/srv/register", "username=JFK@mafia.com", "password=Marilyn");
         var response = TestUtility.fetch("/srv/login?username=JFK@mafia.com&password=wrongPassword");
-        assert(response.contains("False"));
+        assertTrue(response.contains("False"));
     }
     
     // trying to log into a seperate account or loggin into a different account without logging out
@@ -125,7 +126,7 @@ public class MainNGTest {
         TestUtility.post("/srv/register", "username=JimmyHoffa@mafia.com", "password=IDEAD");
         TestUtility.fetch("/srv/login?username=JFK@mafia.com&password=Marilyn");
         var response = TestUtility.fetch("/srv/login?username=JFK@mafia.com&password=Marilyn");
-        assert(response.contains("False"));
+        assertTrue(response.contains("False"));
     }
     
     // ##### WHO / HOME PAGE #######
@@ -135,7 +136,7 @@ public class MainNGTest {
         TestUtility.post("/srv/register", "username=JimmyHoffa@mafia.com", "password=IDEAD");
         TestUtility.fetch("/srv/login?username=JimmyHoffa@mafia.com&password=IDEAD");
         var response = TestUtility.fetch("/srv/who");   // who uses the session to see if youre logged in
-        assert(response.contains("True"));
+        assertTrue(response.contains("True"));
         
     }
     
@@ -144,7 +145,7 @@ public class MainNGTest {
     public void whoNotLoggedIn(){  
         TestUtility.post("/srv/register", "username=JimmyHoffa@mafia.com", "password=IDEAD");
         var response = TestUtility.fetch("/srv/who");   // who uses the session to see if youre logged in
-        assert(response.contains("False"));
+        assertTrue(response.contains("False"));
         
     }
     
@@ -155,7 +156,7 @@ public class MainNGTest {
         TestUtility.post("/srv/register", "username=JimmyHoffa@mafia.com", "password=IDEAD");
         TestUtility.fetch("/srv/login?username=JimmyHoffa@mafia.com&password=IDEAD");
         var response = TestUtility.fetch("/srv/logout?username=JimmyHoffa@mafia.com");
-        assert(response.contains("True"));    
+        assertTrue(response.contains("True"));    
     }
     
     // tests when you are not logged in
@@ -163,7 +164,7 @@ public class MainNGTest {
     public void LogoutNotLoggedIn(){
         TestUtility.post("/srv/register", "username=JimmyHoffa@mafia.com", "password=IDEAD");
         var response = TestUtility.fetch("/srv/logout?username=JimmyHoffa@mafia.com");
-        assert(response.contains("False"));    
+        assertTrue(response.contains("False"));    
     }
     
     // tests when no parameters are given and user is logged in
@@ -172,7 +173,7 @@ public class MainNGTest {
         TestUtility.post("/srv/register", "username=JimmyHoffa@mafia.com", "password=IDEAD");
         //TestUtility.fetch("/srv/login?username=JimmyHoffa@mafia.com&password=IDEAD");
         var response = TestUtility.fetch("/srv/logout");
-        assert(response.contains("False"));
+        assertTrue(response.contains("False"));
     }
     
     // tests when no parameters are given and no one is logged in
@@ -181,6 +182,6 @@ public class MainNGTest {
         TestUtility.post("/srv/register", "username=JimmyHoffa@mafia.com", "password=IDEAD");
         TestUtility.fetch("/srv/login?username=JimmyHoffa@mafia.com&password=IDEAD");
         var response = TestUtility.fetch("/srv/logout");
-        assert(response.contains("False"));
+        assertTrue(response.contains("False"));
     }
 }
