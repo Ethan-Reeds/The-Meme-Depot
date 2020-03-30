@@ -30,6 +30,16 @@ public class Register extends HttpServlet{
         var day = req.getParameter("day");
         var phone = req.getParameter("phone");
         
+        if(email != null) {
+            String[] parts = email.split("@");
+            
+            if(parts.length != 2 || parts[0].isEmpty()) {
+                pw.println("Improper email");
+                pw.println("False");
+                return;
+            }
+        }
+        
         if (username == null && password == null) {
             pw.println("No username or password provided");
             pw.println("False");
@@ -42,7 +52,9 @@ public class Register extends HttpServlet{
         } else {
             //Check for duplicate username
             if(AccountManager.instance.getUser(username) != null) {
-                resp.sendError(409, "duplicate username");
+                //resp.sendError(409, "duplicate username");
+                pw.println("duplicate username");
+                pw.println("False");
                 return;
             }
             
