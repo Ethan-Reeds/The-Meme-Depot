@@ -10,24 +10,24 @@ import java.util.function.BiConsumer;
  *
  * @author cayle
  */
-public class PostManager {
-    protected static Map<String, Post> postList = new HashMap<String, Post>();
+public class CommentManager {
+    protected static Map<String, Comment> commentList = new HashMap<String, Comment>();
     
-    public static boolean post(String text){
-        if(postList.isEmpty()){
+    public static boolean Comment(String text){
+        if(commentList.isEmpty()){
             return false;
         }
-        return (postList.get(text).getTextPost().equals(text));
+        return (commentList.get(text).getCommentPost().equals(text));
     }
     
-    public static boolean addPost( String post){
+    public static boolean addComment( String post){
         if(post.length() != 1){
             return false;
         }
-        if(!postList.isEmpty()){
+        if(!commentList.isEmpty()){
             return false;
         }
-        postList.put(post, new Post(post));
+        commentList.put(post, new Comment(post));
         return true;
     }
 }

@@ -12,13 +12,20 @@ and open the template in the editor.
         <link rel="stylesheet" href="bootstrap.min.css">
         <script src="jquery.min.js"></script>
         <script src="bootstrap.bundle.min.js"></script>
+        <script src="Comment.js"></script>
     </head><body>
         <h1>Meme Depot</h1>
-        <div>Add a comment</div>
-        <form action='/action_page.php' method='post'>
-        </form>
-        <textarea rows=10 cols=60>Enter comment here...</textarea>
+        <input type="text" id="myComment">
+        <input type="submit" value="Comment" name="comment">
         <br>
-        <input type='submit' value='Comment'>
+        <textarea rows="5" cols="30"></textarea>
+        <p id="demo"></p>
+        
+        <script>
+            function myComment(event){
+                var x = document.getElementById("myComment").value;
+                document.getElementById("demo").innerHTML = x;
+            }
+        </script>
     </body>
 </html>

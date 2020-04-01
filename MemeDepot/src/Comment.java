@@ -3,25 +3,22 @@
  * @author cayle
  */
 
-public class Post{
+public class Comment{
     public byte[] pic;          //Picture sender is posting
     public String text_post;    //Message in words
-    public Account poster;      //Who sent the post
+    public Account commenter;      //Who sent the post
     
-    public Post(String text){
+    public Comment(String text){
         text_post = text;
         pic = null;
     }
     
-    public String getTextPost(){
+    public String getCommentPost(){
         return text_post;
     }
     
-    public Account getPoster(){
-        return poster;
+    public Account getCommenter(){
+        return commenter;
     }
     
-    public byte[] getPic(){
-        return pic;
-    }
 }
