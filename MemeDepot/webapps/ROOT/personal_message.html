@@ -1,0 +1,102 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="css/personal_message.css">
+		<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css">
+		<script src="js/bootstrap.bundle.min.js"></script>
+        <script src="jquery.min.js"></script>
+        <script src="js/personal_message.js"></script>
+</head>
+	<body>
+        <header> 
+            
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark" role = "navigation">
+                <a class="navbar-brand" href="#">
+                    <img src="Meme Depot Logo.png" width="30" height="30" class="d-inline-block align-top logoStyle" alt="">
+                    
+                </a>
+                <a class="navbar-brand" href="#" id = "logoText">Meme Depot</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+              
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                  <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                      <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="login.html">Log in</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="register.html">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="personal_message.html">PM</a>
+                    </li>
+                  </ul>
+                </div>
+            </nav>
+        </header>
+
+	<!-- who do you want to send it to? -->
+		<div class="container">
+			
+			<div class="col-sm-4" id="packet">
+				<div> 
+					 <br>
+					To:
+					<input id=”username” size=40 >
+					<br>
+
+					Messgage:
+					<br>
+					<textarea id="message" rows=10 cols=40>keep it clean</textarea>
+				</div>
+			</div>
+
+			<div class="col-sm-4" id="chat">
+				<ul id="persons">
+					<li> example 1 </li>	<!--this will be users names-->
+					<li> example 2 </li>	<!---on click it will open the chat for that user and auto fill the to--->
+					<li> example 3 </li>
+					<li> example 4 </li>
+				</ul>
+				
+			</div>
+
+			<div class="btn btn-primary" onclick="sendMessage()">send message</div> 
+
+			<div id="footer">footer bs</div>
+
+		
+		</div>
+
+
+	</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
