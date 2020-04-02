@@ -7,6 +7,7 @@
 
 import java.io.IOException;
 import java.util.*;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -16,8 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(urlPatterns={"/pm_txt"})
 @MultipartConfig
-public class pm_txt {
-    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException{
+public class pm_txt extends HttpServlet{
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         resp.setContentType("text/plain");
         var pw = resp.getWriter();
         var sess = req.getSession();

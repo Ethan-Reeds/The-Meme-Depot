@@ -9,8 +9,14 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import static org.testng.Assert.*;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
@@ -28,6 +34,7 @@ public class privateMessage_txtNGTest {
     }
 
     static CookieManager cookieManager = new CookieManager();
+   
 
     @BeforeClass
     public static void setupcookie() {
@@ -76,6 +83,27 @@ public class privateMessage_txtNGTest {
             throw new RuntimeException(e);
         }
     }
+    static String post(String location, String key, String value, String key2, String value2){
+        try {
+            HttpClient jettyClient = new HttpClient();
+            var prov = new org.eclipse.jetty.client.util.MultiPartContentProvider();
+            prov.addFieldPart(key,
+                    new StringContentProvider(value),
+                    null);
+            prov.addFieldPart(key2,
+                    new StringContentProvider(value2),
+                    null);
+            prov.close();
+            var req = jettyClient.newRequest("localhost:2020/srv/" + location);
+            req.method("POST");
+            req.content(prov);
+            var resp = req.send();
+            
+            return resp.getContentAsString();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Test of doPost method, of class privateMessage_txt.
@@ -83,11 +111,11 @@ public class privateMessage_txtNGTest {
     @Test
     public void everything_correct() throws Exception {
         System.out.println("everything_correct");
-        // servlet handles creating the message and getting the accounts
         fetch("/srv/login?username=alecBaldwin@imGreat.com&password=30Rock!");
-        // logged in so that the session can check for the username to find the correct account
-        var response = fetch("/srv/pm_txt?to=markyMark@funkyBunch.com&message=hey+do+you+want+to+be+on+30+rock?+lol");
-        assert(response.contains("hey+do+you+want+to+be+on+30+rock?+lol"));
+        
+        var response = post("pm_txt","to","markyMark@funkyBunch.com","message","want to be on 30 rock?");
+        System.out.println(response);
+        assert(response.contains("hey do you want to be on 30 rock?"));
     }
     @Test
     public void recipient_doesnt_exist() throws Exception {

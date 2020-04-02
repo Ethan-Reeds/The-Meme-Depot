@@ -16,7 +16,7 @@ import java.util.StringJoiner;
  * @author techn
  */
 public class TestUtility {
-        static String fetch(String... allurls) {
+    static String fetch(String... allurls) {
         try {
             String str = null;
             byte[] returnedData = new byte[]{0};  //dummy
