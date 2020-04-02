@@ -24,6 +24,7 @@ public class pm_txt extends HttpServlet{
         var sess = req.getSession();
         
         // building the message/adding the message to manager
+        
         String from = sess.getAttribute("username").toString(); // no idea if this will work
         String to = req.getParameter("to");     // handle input errors with jquery
         String msg = req.getParameter("message");

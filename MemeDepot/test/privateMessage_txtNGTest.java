@@ -94,10 +94,15 @@ public class privateMessage_txtNGTest {
                     new StringContentProvider(value2),
                     null);
             prov.close();
-            var req = jettyClient.newRequest("localhost:2020/srv/" + location);
+            
+            jettyClient.start();
+            
+            var req = jettyClient.newRequest("http://localhost:2020/srv/" + location);
             req.method("POST");
             req.content(prov);
             var resp = req.send();
+            
+            jettyClient.stop();
             
             return resp.getContentAsString();
         } catch (Exception e) {
@@ -111,7 +116,15 @@ public class privateMessage_txtNGTest {
     @Test
     public void everything_correct() throws Exception {
         System.out.println("everything_correct");
+        
+        messageManager mInstance = new messageManager();
+        Account acct1 = new Account("alecBaldwin@imGreat.com", "30Rock!","alecBaldwin@imGreat.com","220","04","20","12323234");
+        Account acct2 = new Account("markyMark@funkyBunch.com", "imAnActorN0w", "markyMark@funkyBunch.com","2343","02","35","394858783");
+        AccountManager.addUser(acct1.username,acct1.password,acct1.email,"220","04","20","12323234");
+        AccountManager.addUser(acct2.username,acct2.password,acct2.email,"2343","02","35","394858783");
+        
         fetch("/srv/login?username=alecBaldwin@imGreat.com&password=30Rock!");
+        // log in so that we can acces the senders username from the session
         
         var response = post("pm_txt","to","markyMark@funkyBunch.com","message","want to be on 30 rock?");
         System.out.println(response);
