@@ -58,14 +58,6 @@ public class privateMessage_txtNGTest {
         fetch("/srv/clear");
     }
     
-    @BeforeMethod
-    public void make_accts(){
-        messageManager mInstance = new messageManager();
-        Account acct1 = new Account("alecBaldwin@imGreat.com", "30Rock!","alecBaldwin@imGreat.com","220","04","20","12323234");
-        Account acct2 = new Account("markyMark@funkyBunch.com", "imAnActorN0w", "markyMark@funkyBunch.com","2343","02","35","394858783");
-        AccountManager.addUser(acct1.username,acct1.password,acct1.email,"220","04","20","12323234");
-        AccountManager.addUser(acct2.username,acct2.password,acct2.email,"2343","02","35","394858783");
-    }
         
     static String fetch(String... allurls) {
         try {
@@ -120,33 +112,62 @@ public class privateMessage_txtNGTest {
         messageManager mInstance = new messageManager();
         Account acct1 = new Account("alecBaldwin@imGreat.com", "30Rock!","alecBaldwin@imGreat.com","220","04","20","12323234");
         Account acct2 = new Account("markyMark@funkyBunch.com", "imAnActorN0w", "markyMark@funkyBunch.com","2343","02","35","394858783");
-
-        TestUtility.post("/srv/register", "username=alecBaldwin@imGreat.com", "password=30Rock!");
-        TestUtility.post("/srv/register", "username=markyMark@funkyBunch.com", "password=imAnActorN0w");
-        
+        post("register", "username=alecBaldwin@imGreat.com", "password=30Rock!");
+        post("register", "username=markyMark@funkyBunch.com", "password=imAnActorN0w");
         var response = post("pm_txt","to=markyMark@funkyBunch.com", "from=alecBaldwin@imGreat.com","message=want to be on 30 rock?");
-        System.out.println(response);
         assert(response.contains("want to be on 30 rock?"));
     }
+    
+    @Test
+    public void everything_correct_mulitpleMessages() throws Exception {
+        System.out.println("everything_correct (more than one message)");
+        
+        messageManager mInstance = new messageManager();
+        Account acct1 = new Account("alecBaldwin@imGreat.com", "30Rock!","alecBaldwin@imGreat.com","220","04","20","12323234");
+        Account acct2 = new Account("markyMark@funkyBunch.com", "imAnActorN0w", "markyMark@funkyBunch.com","2343","02","35","394858783");
+        post("register", "username=alecBaldwin@imGreat.com", "password=30Rock!");
+        post("register", "username=markyMark@funkyBunch.com", "password=imAnActorN0w");
+        post("pm_txt","to=markyMark@funkyBunch.com", "from=alecBaldwin@imGreat.com","message=want to be on 30 rock?");
+        var response = post("pm_txt","to=alecBaldwin@imGreat.com", "from=markyMark@funkyBunch.com","message=nah");
+        System.out.println(response);
+        assert(response.contains("want to be on 30 rock?\n"
+                + "nah"));
+    }
+    
     @Test
     public void recipient_doesnt_exist() throws Exception {
-        System.out.println("recipient_doesnt_exist");
-        HttpServletRequest req = null;
-        HttpServletResponse resp = null;
-        pm_txt instance = new pm_txt();
-        //instance.doPost(req, resp);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("recipient does not exist");
+        
+        messageManager mInstance = new messageManager();
+        Account acct1 = new Account("alecBaldwin@imGreat.com", "30Rock!","alecBaldwin@imGreat.com","220","04","20","12323234");
+        post("register", "username=alecBaldwin@imGreat.com", "password=30Rock!");
+        var response = post("pm_txt","to=markyMark@funkyBunch.com", "from=alecBaldwin@imGreat.com","message=want to be on 30 rock?");
+        assert(response.contains("Account(s) do not exist"));
     }
     @Test
-    public void incorrect_parameters() throws Exception {
-        System.out.println("incorrect_parameters");
-        HttpServletRequest req = null;
-        HttpServletResponse resp = null;
-        pm_txt instance = new pm_txt();
-        //instance.doPost(req, resp);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void incorrect_parameters_0() throws Exception {
+        System.out.println("incorrect_parameters (missing message)");
+        
+        messageManager mInstance = new messageManager();
+        Account acct1 = new Account("alecBaldwin@imGreat.com", "30Rock!","alecBaldwin@imGreat.com","220","04","20","12323234");
+        Account acct2 = new Account("markyMark@funkyBunch.com", "imAnActorN0w", "markyMark@funkyBunch.com","2343","02","35","394858783");
+        post("register", "username=alecBaldwin@imGreat.com", "password=30Rock!");
+        post("register", "username=markyMark@funkyBunch.com", "password=imAnActorN0w");
+        var response = post("pm_txt","to=markyMark@funkyBunch.com", "from=alecBaldwin@imGreat.com");
+        assert(response.contains("No message"));
+    }
+    
+    @Test
+    public void incorrect_parameters_1() throws Exception {
+        System.out.println("incorrect_parameters (no sender)");
+        
+        messageManager mInstance = new messageManager();
+        Account acct1 = new Account("alecBaldwin@imGreat.com", "30Rock!","alecBaldwin@imGreat.com","220","04","20","12323234");
+        Account acct2 = new Account("markyMark@funkyBunch.com", "imAnActorN0w", "markyMark@funkyBunch.com","2343","02","35","394858783");
+        post("register", "username=alecBaldwin@imGreat.com", "password=30Rock!");
+        post("register", "username=markyMark@funkyBunch.com", "password=imAnActorN0w");
+        var response = post("pm_txt","to=markyMark@funkyBunch.com","message=want to be on 30 rock?");
+        assert(response.contains("Username(s) missing"));
     }
     
 }

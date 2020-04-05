@@ -21,9 +21,6 @@ public class pm_txt extends HttpServlet{
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         resp.setContentType("text/plain");
         var pw = resp.getWriter();
-        //var sess = req.getSession();
-        
-        // building the message/adding the message to manager
         
         var from = req.getParameter("from"); 
         String to = req.getParameter("to");     // handle input errors with jquery
@@ -31,15 +28,15 @@ public class pm_txt extends HttpServlet{
         
         // error handling
         if (from == null || to == null)
-            pw.println("false0");    // this is for testing purposes
+            pw.println("Username(s) missing");    // this is for testing purposes
             // might be able to handle this in the jquery 
         else if (msg == null)
-            pw.println("false1");
+            pw.println("No message");
         else{
             Account a = AccountManager.getAccount(from);
             Account b = AccountManager.getAccount(to);
             if(a == null || b == null)
-                pw.println("false2");    // makes sure accounts are valid
+                pw.println("Account(s) do not exist");    // makes sure accounts are valid
             else{
                 Message msgObj = new Message(msg, a, b);
                 messageManager.addMessage(msgObj);
