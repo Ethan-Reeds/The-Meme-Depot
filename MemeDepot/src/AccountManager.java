@@ -157,7 +157,7 @@ public class AccountManager {
         return false;
     }    
     
-    private Account getAccount(String username){
+    public static Account getAccount(String username){
         for( Account a : accountList.values()){
             if (a.getUsername().equals(username)){
                 return a;

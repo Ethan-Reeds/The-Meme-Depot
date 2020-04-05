@@ -83,16 +83,16 @@ public class privateMessage_txtNGTest {
             throw new RuntimeException(e);
         }
     }
-    static String post(String location, String key, String value, String key2, String value2){
+    static String post(String location, String ...keyVal){
         try {
             HttpClient jettyClient = new HttpClient();
             var prov = new org.eclipse.jetty.client.util.MultiPartContentProvider();
-            prov.addFieldPart(key,
-                    new StringContentProvider(value),
+            for (var i : keyVal){
+                String[] tmp = i.split("=");
+                prov.addFieldPart(tmp[0],
+                    new StringContentProvider(tmp[1]),
                     null);
-            prov.addFieldPart(key2,
-                    new StringContentProvider(value2),
-                    null);
+            }
             prov.close();
             
             jettyClient.start();
@@ -120,15 +120,13 @@ public class privateMessage_txtNGTest {
         messageManager mInstance = new messageManager();
         Account acct1 = new Account("alecBaldwin@imGreat.com", "30Rock!","alecBaldwin@imGreat.com","220","04","20","12323234");
         Account acct2 = new Account("markyMark@funkyBunch.com", "imAnActorN0w", "markyMark@funkyBunch.com","2343","02","35","394858783");
-        AccountManager.addUser(acct1.username,acct1.password,acct1.email,"220","04","20","12323234");
-        AccountManager.addUser(acct2.username,acct2.password,acct2.email,"2343","02","35","394858783");
+
+        TestUtility.post("/srv/register", "username=alecBaldwin@imGreat.com", "password=30Rock!");
+        TestUtility.post("/srv/register", "username=markyMark@funkyBunch.com", "password=imAnActorN0w");
         
-        fetch("/srv/login?username=alecBaldwin@imGreat.com&password=30Rock!");
-        // log in so that we can acces the senders username from the session
-        
-        var response = post("pm_txt","to","markyMark@funkyBunch.com","message","want to be on 30 rock?");
+        var response = post("pm_txt","to=markyMark@funkyBunch.com", "from=alecBaldwin@imGreat.com","message=want to be on 30 rock?");
         System.out.println(response);
-        assert(response.contains("hey do you want to be on 30 rock?"));
+        assert(response.contains("want to be on 30 rock?"));
     }
     @Test
     public void recipient_doesnt_exist() throws Exception {
