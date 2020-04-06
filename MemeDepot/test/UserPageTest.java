@@ -1,5 +1,11 @@
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
+import java.util.Base64;
+import javax.imageio.ImageIO;
 import static org.testng.Assert.*;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -70,6 +76,30 @@ public class UserPageTest {
         //Check if / at end matters
         response = TestUtility.fetch("/srv/user/spooky/");
         assertTrue(response.contains("Spooky"));
+    }
+    
+    @Test
+    public void correctlyFilledPage() throws IOException {
+        //Create the account to test
+        TestUtility.post("/srv/register", "username=Spooky", "password=1234", "email=Cat@turtle.com", 
+                         "day=27", "year=2000", "month=October");
+        
+        //Check normal fetch
+        String response = TestUtility.fetch("/srv/user/Spooky");
+        assertTrue(response.contains("Spooky"));
+        assertTrue(response.contains("Cat@turtle.com"));
+        
+        //Check if default image is there
+        BufferedImage bImage = ImageIO.read(new File("assets/default_avatar.png"));
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ImageIO.write(bImage, "png", bos);
+        byte[] avatar = bos.toByteArray();
+        
+        String image = Base64.getEncoder().encodeToString(avatar);
+        
+        assertTrue(response.contains(image));
+        
+        //I would test setting a different image and making sure it is used, but no servlet to do that yet
     }
     
     @Test

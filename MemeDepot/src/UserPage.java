@@ -1,6 +1,11 @@
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Base64;
+import javax.imageio.ImageIO;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -60,6 +65,20 @@ public class UserPage extends HttpServlet {
         
         //Woo everything is good, let jsp handle the rest
         req.setAttribute("account", account);
+        
+        
+        byte[] avatar = account.getAvatar();
+        
+        if(avatar == null) {
+            BufferedImage bImage = ImageIO.read(new File("assets/default_avatar.png"));
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ImageIO.write(bImage, "png", bos);
+            avatar = bos.toByteArray();
+        }
+        
+        String image = Base64.getEncoder().encodeToString(avatar);
+        
+        req.setAttribute("image", image);
         
         RequestDispatcher dispatcher = req.getRequestDispatcher("/user.jsp");
         dispatcher.forward(req, resp);
