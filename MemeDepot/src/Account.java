@@ -15,6 +15,11 @@ public class Account {
     protected String email;
     protected String birthdate;
     protected String phone;
+    
+    protected int userID;       // is assigned not given
+    protected static int nextID = 1000;
+
+    
     protected boolean isAdmin;  // default is false you can set it to true
     protected byte[] avatar;    // default is to NULL;
     protected boolean loggedIn;
@@ -27,10 +32,23 @@ public class Account {
         phone = Phone;
         isAdmin = false;
         avatar = null;
-    }    
+        
+        userID = nextID;
+        nextID++;
+    }
+    
+    public int getUserID(){
+        return userID;
+    }
+    
     public String getUsername(){
         return username;
     }
+    
+    public String getEmail() {
+        return email;
+    }
+    
     public boolean getLoggedIn(){
         return loggedIn;
     }
