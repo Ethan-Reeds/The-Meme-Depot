@@ -88,53 +88,26 @@ public class AccountManager {
         return true;
     }
   
-    public static ArrayList<String> searchForUser(String Username){
+    public static ArrayList<String> searchForUser(String search){
         //Looks through the HashMap for a username that best matches the search 
-        String user = null;
-        ArrayList<String> bestMatchs = new ArrayList<String>();
-        Iterator accountIterator = accountList.entrySet().iterator();
-        while(accountIterator.hasNext()){
-            Map.Entry mapElement = (Map.Entry)accountIterator.next();
-            user = (String)mapElement.getKey();
-            if(accountList.get(user).getLoggedIn()==false)
-            {
-                if(Username.charAt(0)== user.charAt(0))
-                {
-                    bestMatchs.add(user);
-                }
-            }
-        }
-        if(Username.length()>1 && !bestMatchs.isEmpty())
-        {
-            for(int i = 1; i< Username.length();i++)
-            {
-                ArrayList<String> temp = new ArrayList<String>();
-                for(int j = 0; j< bestMatchs.size();j++)
-                {
-                    if(Username.charAt(i) == bestMatchs.get(j).charAt(i))
-                    {
-                        temp.add(bestMatchs.get(j));
-                    }
-                }
-                bestMatchs = temp;
-                
-            }
-            
-        }
-        return bestMatchs;
         
+        ArrayList<String> bestMatchs = new ArrayList<String>();
+        for (String user : accountList.keySet()) {
+           if (user.matches("(.*)"+search+"(.*)")) {
+               bestMatches.add(user);
+           }
+        } 
+        return bestMatches; 
     }
     
-    public String getUser(String username){
-        //https://www.geeksforgeeks.org/iterate-map-java/
-        // used this to see how to use the forEach() method
-        // turns out you cant return out of the forEach method for maps
-        // so Andy showed me an example of using a for each loop to go through a map
-        Account acct = getAccount(username);
-        if (acct != null)
-            return acct.getUsername();
-        return null;
-    }
+//     public  getUser(String username){
+//         //https://www.geeksforgeeks.org/iterate-map-java/
+//         // used this to see how to use the forEach() method
+//         // turns out you cant return out of the forEach method for maps
+//         // so Andy showed me an example of using a for each loop to go through a map
+//         return getAccount(username); // wouldn't the get user function return the account instead of the username as it is already taking that as a parameter. 
+        
+//     } i don't think we would  need this method. 
     
     public boolean isAdmin(String username){
         Account acct = getAccount(username);
@@ -158,12 +131,9 @@ public class AccountManager {
     }    
     
     private Account getAccount(String username){
-        for( Account a : accountList.values()){
-            if (a.getUsername().equals(username)){
-                return a;
-            }
-        }
-        
+        if (accountList.containsKey(username)) {
+          return accountList.get(username);  
+        } 
         return null;
     }
     
