@@ -5,3 +5,7 @@
  */
 "use strict"
 
+function updateComment(){
+    $.ajax("/srv/comment");
+    cache: false;
+}

@@ -15,15 +15,15 @@ and open the template in the editor.
         <script src="Comment.js"></script>
     </head><body>
         <h1>Meme Depot</h1>
-        <input type="text" id="myComment">
-        <input type="submit" value="Comment" name="comment">
         <br>
-        <textarea rows="5" cols="30"></textarea>
         <p id="demo"></p>
+        <textarea id="Comment" rows="5" cols="50">Add a Comment...</textarea>
+        <br><br>
+        <button onclick="myComment()">Comment</button>
         
         <script>
-            function myComment(event){
-                var x = document.getElementById("myComment").value;
+            function myComment(){
+                var x = document.getElementById("Comment").value;
                 document.getElementById("demo").innerHTML = x;
             }
         </script>
