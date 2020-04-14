@@ -184,4 +184,30 @@ public class MainNGTest {
         var response = TestUtility.fetch("/srv/logout");
         assertTrue(response.contains("False"));
     }
+    // tests search when no one is logged in
+    @Test
+    public void SearchForUserNoUserLoggedIn(){
+        TestUtility.post("/srv/register", "username=JimmyHoffa@mafia.com", "password=IDEAD");
+        var response = TestUtility.fetch("/srv/search?search=JimmyHoffa@mafia.com");
+        assertTrue(response.contains("JimmyHoffa@mafia.com"));
+        
+    }
+    // tests search when search input is single char
+    @Test
+    public void SearchForUserWithSingleChar(){
+        TestUtility.post("/srv/register", "username=JimmyHoffa@mafia.com", "password=IDEAD");
+        //TestUtility.fetch("/srv/login?username=JimmyHoffa@mafia.com&password=IDEAD");
+        var response = TestUtility.fetch("/srv/search?search=J");
+        assertTrue(response.contains("JimmyHoffa@mafia.com"));
+        
+    }
+     // tests search when search input is single char
+    @Test
+    public void SearchForUserLoggedIn(){
+        TestUtility.post("/srv/register", "username=JimmyHoffa@mafia.com", "password=IDEAD");
+        TestUtility.fetch("/srv/login?username=JimmyHoffa@mafia.com&password=IDEAD");
+        var response = TestUtility.fetch("/srv/search?search=JimmyHoffa@mafia.com");
+        assertTrue(response.contains("No Matchs"));
+        
+    }
 }
