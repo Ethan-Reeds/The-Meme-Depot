@@ -63,6 +63,19 @@ public class UserPage extends HttpServlet {
             return;
         }
         
+        //Check for privacy concerns
+        switch(account.getPrivacy()) {
+            case Protected:
+                if(req.getSession().getAttribute("username") == null) {
+                    output.write("You must be logged in to view this account.");
+                    return;
+                }
+                break;
+            case Private:
+                //Unimplemented
+                break;
+        }
+        
         //Woo everything is good, let jsp handle the rest
         req.setAttribute("account", account);
         
