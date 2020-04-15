@@ -1,3 +1,10 @@
+import java.util.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -14,62 +21,79 @@ public class Account {
     protected String password;
     protected String email;
     protected String birthdate;
-    protected String phone;
-    
-    protected int userID;       // is assigned not given
-    protected static int nextID = 1000;
-
-    
+    protected int userID;       // auto-increments in database
     protected boolean isAdmin;  // default is false you can set it to true
     protected byte[] avatar;    // default is to NULL;
     protected boolean loggedIn;
     
-    public Account(String Username, String Password, String Email, String Year, String Month, String Day, String Phone){
-        username = Username;        // check for xxxxx@xxxxx
-        password = Password;
-        email = Email;
-        birthdate = Year + "-" + Month + "-" + Day;
-        phone = Phone;
-        isAdmin = false;
-        avatar = null;
+    // MySQL database connection info
+    static String sqlURL = "jdbc:mysql://localhost:3306/memedepot";
+    static String sqlDriver = "com.mysql.jdbc.Driver";
+    static String sqlUser = "root";
+    
+    public Account(String Username, String Password, String Email, String Year, String Month, String Day){
+        this.username = Username;        // check for xxxxx@xxxxx
+        this.password = Password;
+        this.email = Email;
+        this.birthdate = Year + "-" + Month + "-" + Day;
+        this.isAdmin = false;
+        this.avatar = null;
         
-        userID = nextID;
-        nextID++;
+        try(var conn = java.sql.DriverManager.getConnection(sqlURL)) {
+            var update = ParameterizedStatement.executeOneUpdate(conn, 
+                    "SELECT userID FROM users WHERE username=?", 
+                    this.username);
+            // sets userID to auto-incremented int from database
+            this.userID = update;
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public static Account fromSQL(Map<String, ParameterizedStatement.Value> M) {
+        return new Account(
+            M.get("username").asString(),
+            M.get("pass").asString(),
+            M.get("email").asString(),
+            M.get("birthday").asString(),
+            M.get("admin").asString(),
+            M.get("avatar").asString()
+        );
     }
     
     public int getUserID(){
-        return userID;
+        return this.userID;
     }
     
     public String getUsername(){
-        return username;
+        return this.username;
     }
     
     public String getEmail() {
-        return email;
+        return this.email;
     }
     
     public boolean getLoggedIn(){
-        return loggedIn;
+        return this.loggedIn;
     }
     public void setLoggedIn(boolean status){
-        loggedIn = status;
+        this.loggedIn = status;
     }
     public String getPassword(){
-        return password;
+        return this.password;
     }
     public boolean getIsAdmin(){
-        return isAdmin;
+        return this.isAdmin;
     }
     public byte[] getAvatar(){
-        return avatar;
+        return this.avatar;
     }
     public boolean setAvatar(byte[] newAvatar){
-        avatar = newAvatar;
+        this.avatar = newAvatar;
         return true;
     }
     public void setIsAdmin(boolean hasAdminPrivledges){
-        isAdmin = hasAdminPrivledges;
+        this.isAdmin = hasAdminPrivledges;
     }
     
 }

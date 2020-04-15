@@ -7,168 +7,205 @@
 import java.util.*;
 import java.lang.String;
 import java.util.function.BiConsumer;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  *
  * @author Ethan Reeds
  */
 public class AccountManager {
-    
-    // https://www.geeksforgeeks.org/java-util-hashmap-in-java-with-examples/
-    // https://www.geeksforgeeks.org/hashmap-containskey-method-in-java/
-    // https://www.geeksforgeeks.org/hashmap-get-method-in-java/
-    // https://www.geeksforgeeks.org/hashmap-put-method-in-java/
-    protected static Map<String, Account> accountList = new HashMap<String,Account>();
-    
+
     static AccountManager instance = new AccountManager();  // instance used for the integreation testing,
                                                             // called in /clear servlet
     
+    // MySQL database connection info
+    static String sqlURL = "jdbc:mysql://localhost:3306/memedepot";
+    static String sqlDriver = "com.mysql.jdbc.Driver";
+    static String sqlUser = "root";
     
     public static boolean login(String username, String password) {
-        if (accountList.isEmpty() || !accountList.containsKey(username)){
-            return false;
-        } 
-        if (!accountList.get(username).getLoggedIn()){
-            accountList.get(username).setLoggedIn(true);
+        try(var conn = java.sql.DriverManager.getConnection(sqlURL)) {
+            var query = ParameterizedStatement.executeOneQuery(conn, 
+                    "SELECT username, password FROM users WHERE username=? AND pass=?", 
+                    username, password).getAll();
+            if(!query.isEmpty()) {
+                // user exists
+                var update = ParameterizedStatement.executeOneUpdate(conn, 
+                        "SELECT loggedIn FROM users WHERE username=?", 
+                        username);
+                if(update == 0) {
+                    // not logged in yet, log them in
+                    ParameterizedStatement.executeOneUpdate(conn, 
+                            "UPDATE users SET loggedIn=1 WHERE username=?", 
+                            username);
+                    return true;
+                }
+                else {
+                    // already logged in
+                    return false;
+                }
+            }
+            else {
+                // user does not exist
+                return false;
+            }
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
         }
-        else{
-            return false;
-        }
-        
-        return (accountList.get(username).getPassword().equals(password));
     }
     
-    public static boolean logout(String username){
-        if ( accountList.get(username).getLoggedIn() == true ){
-            accountList.get(username).setLoggedIn(false);
-            return true;
-        }
-        return false;
+    public static boolean logout(Account acc){
+        try(var conn = java.sql.DriverManager.getConnection(sqlURL)) {
+            var update = ParameterizedStatement.executeOneUpdate(conn, 
+                    "SELECT loggedIn FROM users WHERE userID=?", 
+                    acc.getUserID());
+                if(update == 1) {
+                    // logged in, log them out
+                    ParameterizedStatement.executeOneUpdate(conn, 
+                            "UPDATE users SET loggedIn=1 WHERE userID=?", 
+                            acc.getUserID());
+                    return true;
+                }
+                else {
+                    // not logged in
+                    return false;
+                }
+            } catch(SQLException ex) {
+                throw new RuntimeException(ex);
+            }
     } 
     
-    public static boolean verifyUser(String username, String password){
-        // if username exists
-        if(accountList.containsKey(username)) {
-            // if password matches username
-            if(accountList.get(username).getPassword().equals(password)) {
-                // user exists and info matches
+    public static boolean verifyUser(String username, String password) {
+        // returns true if username and password match account in database
+        try(var conn = java.sql.DriverManager.getConnection(sqlURL)) {
+            var query = ParameterizedStatement.executeOneQuery(conn, 
+                    "SELECT username, password FROM users WHERE username=? AND password=?", 
+                    username, password).getAll();
+            if(query.isEmpty()) {
+                // no matching data
+                return false;
+            }
+            return true;
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public int getUID(Account acc){
+        // returns null if username doesn't exist
+        try(var conn = java.sql.DriverManager.getConnection(sqlURL)) {
+            var update = ParameterizedStatement.executeOneUpdate(conn, 
+                    "SELECT userID FROM users WHERE username=?", 
+                    acc.getUsername());
+            return update;
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public String getEmail(Account acc){
+        try(var conn = java.sql.DriverManager.getConnection(sqlURL)) {
+            var query = ParameterizedStatement.executeOneQuery(conn, 
+                    "SELECT email FROM users WHERE userID=?",
+                    acc.getUserID()).getAll();
+            if(query.isEmpty()) {
+                // no matching data
+                return null;
+            }
+            else {
+                // return result as a string
+                return query.toString();
+            }
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public static boolean addUser(String username, String password, String email, String year, String month, String day){
+        // userID is auto incremented
+        // admin is 0 by default
+        // avatar is null by default
+        String birthday = year+"-"+month+"-"+day;
+        try(var conn = java.sql.DriverManager.getConnection(sqlURL)) {
+            var query = ParameterizedStatement.executeOneQuery(conn, 
+                    "SELECT * FROM users WHERE username=? AND email=?", 
+                    username, email).getAll();
+            // if username or email doesn't already exist
+            if(query.isEmpty()) {
+                // add to database
+                ParameterizedStatement.executeOneUpdate(conn, 
+                        "INSERT INTO users(username, password, email, birthday)"
+                                + " VALUES(?,?,?,STR_TO_DATE(?, '%y,%m,%d')", 
+                        username, password, email, birthday);
+                // add corresponding account
+                new Account(username, password, email, year, month, day);
                 return true;
             }
-        }
-        // user doesn't exist or info doesn't match
-        return false;
-    }
-    
-    public int getUID(String username){
-        // all users have an ID so if you get back -1 it means that the user is not in the database
-        if (accountList.containsKey(username))
-            return accountList.get(username).getUserID();
-        return -1;      // if user does not exist, wont let me return null or i would
-    }
-    
-    ///Returns null if no email
-    public String getEmail(String username){
-        String email = accountList.get(username).getEmail();
-        return email;
-        // since all usernames must be unique checking the username is all that is needed?
-        
-        // https://stackoverflow.com/questions/40693845/hashmap-java-get-value-if-it-exists
-        // used this to see how to see if the key exists using .get() function
-    }
-    
-    public static boolean addUser(String username, String password, String email, String year, String month, String day, String phone){
-        if (!accountList.isEmpty()){
-            if (!verifyUser(username, password)){
-                accountList.put(username, new Account(username, password, email, year, month, day, phone));
-                return true;
+            else {
+                // username or email already exists
+                return false;
             }
-            return false;
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
         }
-        accountList.put(username, new Account(username, password, email, year, month, day, phone));
-        return true;
     }
-  
-    public static ArrayList<String> searchForUser(String Username){
-        //Looks through the HashMap for a username that best matches the search 
-        String user = null;
-        ArrayList<String> bestMatchs = new ArrayList<String>();
-        Iterator accountIterator = accountList.entrySet().iterator();
-        while(accountIterator.hasNext()){
-            Map.Entry mapElement = (Map.Entry)accountIterator.next();
-            user = (String)mapElement.getKey();
-            if(accountList.get(user).getLoggedIn()==false)
-            {
-                if(Username.charAt(0)== user.charAt(0))
-                {
-                    bestMatchs.add(user);
-                }
+    
+    public String getUser(Account acc){
+        try(var conn = java.sql.DriverManager.getConnection(sqlURL)) {
+            // returns null if userID doesn't exist
+            var query = ParameterizedStatement.executeOneQuery(conn, 
+                    "SELECT username FROM users WHERE userID=?", 
+                    acc.getUserID()).getAll();
+            if(query.isEmpty()) {
+                // no matching data
+                return null;
             }
+            // return data as string
+            return query.toString();
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
         }
-        if(Username.length()>1 && !bestMatchs.isEmpty())
-        {
-            for(int i = 1; i< Username.length();i++)
-            {
-                ArrayList<String> temp = new ArrayList<String>();
-                for(int j = 0; j< bestMatchs.size();j++)
-                {
-                    if(Username.charAt(i) == bestMatchs.get(j).charAt(i))
-                    {
-                        temp.add(bestMatchs.get(j));
-                    }
-                }
-                bestMatchs = temp;
-                
-            }
-            
+    }
+    
+    public boolean isAdmin(Account acc){
+        try(var conn = java.sql.DriverManager.getConnection(sqlURL)) {
+            // returns 1 if admin, 0 if not admin
+            var query = ParameterizedStatement.executeOneQuery(conn, 
+                    "SELECT userID FROM users WHERE userID=? AND admin=1", 
+                    acc.getUserID()).getAll();
+            return query.size() > 0;
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
         }
-        return bestMatchs;
-        
     }
     
-    public String getUser(String username){
-        //https://www.geeksforgeeks.org/iterate-map-java/
-        // used this to see how to use the forEach() method
-        // turns out you cant return out of the forEach method for maps
-        // so Andy showed me an example of using a for each loop to go through a map
-        Account acct = getAccount(username);
-        if (acct != null)
-            return acct.getUsername();
-        return null;
-    }
-    
-    public boolean isAdmin(String username){
-        Account acct = getAccount(username);
-        if (acct != null)
-            return acct.getIsAdmin();
-        return false;
-    }
-    
+    /*
     public byte[] getAvatar(String username){
-        Account acct = getAccount(username);
-        if (acct != null)
-            return acct.getAvatar();
-        return null;
+        // convert blob to byte[]?
     }
-    
-    public boolean setAvatar(String username, byte[] img ){
-        Account acct = getAccount(username);
-        if (acct != null)
-            return acct.setAvatar(img);
-        return false;
+    */
+
+    public void setAvatar(Account acc, byte[] img ){
+        // update avatar column for user
+        try(var conn = java.sql.DriverManager.getConnection(sqlURL)) {
+            ParameterizedStatement.executeOneUpdate(conn, 
+                    "UPDATE users SET avatar=? WHERE userID=?", img, acc.getUserID());
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }    
     
-    //Returns account with given username. Ignores character case
-    public Account getAccount(String username){
-        for( Account a : accountList.values()){
-            if (a.getUsername().toLowerCase().equals(username.toLowerCase())){
-                return a;
-            }
-        }
-        
-        return null;
-    }
-    
     static void clear() {
-        accountList.clear(); 
+        try(var conn = java.sql.DriverManager.getConnection(sqlURL)) {
+            ParameterizedStatement.executeOneUpdate(conn,
+                    // basically deletes table and remakes it empty
+                    "TRUNCATE TABLE users");
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }
