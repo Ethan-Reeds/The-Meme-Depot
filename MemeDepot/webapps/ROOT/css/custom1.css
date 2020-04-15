@@ -6,3 +6,38 @@
 #logoText:hover {
     color : grey; 
 }
+#search{
+   text-align: right;
+}
+#post{
+    text-align: center;
+}
+.wrapper{
+    padding: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap:wrap;
+    height: 100vh;
+}
+button{
+    flex: 1;
+    padding: 25px 50px;
+    margin: 25px;
+    border-radius: 999px;
+    border: 5px orange;
+    font-family: 'VT323' monospace;
+    font-size: 25px;
+    text-shadow: 0 3px 5px rgba(0,0,0,0.25);
+    white-space: nowrap;
+    color: white;
+    cursor: pointer;
+    user-select: none;
+    background: #ee7125;
+    background-repeat: repeat-x;
+    background-position: 0 -100%;
+    transition: 1.5s ease;
+}
+butthon:hover{
+    background position: 500% 100%;
+}
