@@ -17,6 +17,11 @@ import java.sql.Statement;
  * TODO make testing harness for this
  */
 public class Account {
+    protected static String[] fields = new String[]{
+        // all columns in users table in database
+        "userID", "email", "username", "password", "birthday", "admin", 
+        "avatar", "loggedIn"};
+    
     protected String username;
     protected String password;
     protected String email;
@@ -30,6 +35,7 @@ public class Account {
     static String sqlURL = "jdbc:mysql://localhost:3306/memedepot";
     static String sqlDriver = "com.mysql.jdbc.Driver";
     static String sqlUser = "root";
+    static String sqlPass = "HhLlHh@972";
     
     public Account(String Username, String Password, String Email, String Year, String Month, String Day){
         this.username = Username;        // check for xxxxx@xxxxx
@@ -39,7 +45,7 @@ public class Account {
         this.isAdmin = false;
         this.avatar = null;
         
-        try(var conn = java.sql.DriverManager.getConnection(sqlURL)) {
+        try(var conn = java.sql.DriverManager.getConnection(sqlURL, sqlUser, sqlPass)) {
             var update = ParameterizedStatement.executeOneUpdate(conn, 
                     "SELECT userID FROM users WHERE username=?", 
                     this.username);
@@ -53,7 +59,7 @@ public class Account {
     public static Account fromSQL(Map<String, ParameterizedStatement.Value> M) {
         return new Account(
             M.get("username").asString(),
-            M.get("pass").asString(),
+            M.get("password").asString(),
             M.get("email").asString(),
             M.get("birthday").asString(),
             M.get("admin").asString(),
