@@ -19,8 +19,16 @@ public class messageManager {
     
     public static boolean addMessage( Message message){
         // make sure both accounts exist, we know that the sender exist since theyre logged in
-        if (AccountManager.accountList.containsKey(message.sender)){
-            if (AccountManager.accountList.containsKey(message.recipient)){
+        Account sender = AccountManager.instance.getAccount(new SQLSearch(
+                "username=?", 
+                new Object[]{message.sender}
+        ));
+        Account recipient = AccountManager.instance.getAccount(new SQLSearch(
+                "username=?", 
+                new Object[]{message.recipient}
+        ));
+        if (sender != null){
+            if (recipient != null){
               //https://stackoverflow.com/questions/7969286/java-how-to-add-values-to-array-list-used-as-value-in-hashmap/7969379
                 // found the above usefull when ran into a problem
                 if (message_list.get(message.sender) == null)
