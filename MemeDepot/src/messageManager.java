@@ -20,11 +20,11 @@ public class messageManager {
     public static boolean addMessage( Message message){
         // make sure both accounts exist, we know that the sender exist since theyre logged in
         Account sender = AccountManager.instance.getAccount(new SQLSearch(
-                "username=?", 
+                "username=?;", 
                 new Object[]{message.sender}
         ));
         Account recipient = AccountManager.instance.getAccount(new SQLSearch(
-                "username=?", 
+                "username=?;", 
                 new Object[]{message.recipient}
         ));
         if (sender != null){

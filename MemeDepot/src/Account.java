@@ -47,7 +47,7 @@ public class Account {
         
         try(var conn = java.sql.DriverManager.getConnection(sqlURL, sqlUser, sqlPass)) {
             var update = ParameterizedStatement.executeOneUpdate(conn, 
-                    "SELECT userID FROM users WHERE username=?", 
+                    "SELECT userID FROM users WHERE username=?;", 
                     this.username);
             // sets userID to auto-incremented int from database
             this.userID = update;

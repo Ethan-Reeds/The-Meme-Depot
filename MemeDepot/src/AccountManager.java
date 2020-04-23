@@ -23,20 +23,28 @@ public class AccountManager {
                                                             // called in /clear servlet
     
     // MySQL database connection info
-    static String sqlURL = "jdbc:mysql://localhost:3306/memedepot";
+    static String sqlURL = "jdbc:mysql://localhost:3306/memedepot?useSSL=false";
     static String sqlDriver = "com.mysql.jdbc.Driver";
     static String sqlUser = "root";
     static String sqlPass = "HhLlHh@972";
     
-    public AccountManager() {
-        instance.loadDriver();
-    }
+    public AccountManager() {}
     
-    public static void loadDriver() {
-        try {
-            Class.forName(sqlDriver);
-        } catch(Exception ex) {
-            System.out.println("Cannot load driver");
+    public Account getAccount(SQLSearch search) {
+        try(var conn = java.sql.DriverManager.getConnection(sqlURL, sqlUser, sqlPass)) {
+            String querystring = "SELECT * FROM users WHERE " + search.query;
+            var result = new ArrayList<Account>();
+            for(var item : ParameterizedStatement.executeOneQuery(conn, querystring, search.params)) {
+                result.add(Account.fromSQL(item));
+            }
+            if(result.size() > 0) {
+                return result.get(0);
+            }
+            else {
+                return null;
+            }
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
         }
     }
     
@@ -49,13 +57,14 @@ public class AccountManager {
         if(AccountManager.verifyUser(username, password)) {
             // username and password match
             try(var conn = java.sql.DriverManager.getConnection(sqlURL, sqlUser, sqlPass)) {
-                var query = ParameterizedStatement.executeOneUpdate(conn, 
-                    "SELECT loggedIn FROM users WHERE username=?", 
-                    username);
-                if(query == 0) {
+                var query = AccountManager.instance.getAccount(new SQLSearch(
+                        "username=? AND loggedIn=0;", 
+                        new Object[]{username}
+                ));
+                if(query != null) {
                     // not logged in yet, log them in
                     ParameterizedStatement.executeOneUpdate(conn, 
-                            "UPDATE users SET loggedIn=1 WHERE username=?", 
+                            "UPDATE users SET loggedIn=1 WHERE username=?;", 
                             username);
                     login = true;
                 }
@@ -63,12 +72,11 @@ public class AccountManager {
                 throw new RuntimeException(ex);
             }
             // update Account object
-            List<Account> result = AccountManager.instance.getAccount(()-> {
-                return new SQLSearch("username=? AND password=?", new Object[]{username, password});
-            });
-            for(Account item : result) {      // should only be one
-                item.loggedIn = true;
-            }
+            Account user = AccountManager.instance.getAccount(new SQLSearch(
+                "username=? AND password=?;", 
+                new Object[]{username, password}
+        ));
+            user.loggedIn = true;
         }
         return login;
     }
@@ -76,13 +84,14 @@ public class AccountManager {
     public static boolean logout(Account acc){
         boolean loggedOut = false;   // returns false if account doesn't exist
         try(var conn = java.sql.DriverManager.getConnection(sqlURL, sqlUser, sqlPass)) {
-            var query = ParameterizedStatement.executeOneUpdate(conn, 
-                "SELECT loggedIn FROM users WHERE userID=?", 
-                acc.getUserID());
-            if(query == 1) {
-                // logged in, log them out
+            var query = AccountManager.instance.getAccount(new SQLSearch(
+                    "userID=? AND loggedIn=1;", 
+                    new Object[]{acc.getUserID()}
+            ));
+            if(query != null) {
+                // logged in already, log them out
                 ParameterizedStatement.executeOneUpdate(conn, 
-                        "UPDATE users SET loggedIn=0 WHERE userID=?", 
+                        "UPDATE users SET loggedIn=0 WHERE userID=?;", 
                         acc.getUserID());
                 acc.loggedIn = false;
                 loggedOut = true;
@@ -97,10 +106,11 @@ public class AccountManager {
     public static boolean verifyUser(String username, String password) {
         // returns true if username and password match existing account
         boolean result = false;
-        List<Account> user = AccountManager.instance.getAccount(()-> {
-            return new SQLSearch("username=? AND password=?", new Object[]{username, password});
-        });
-        if(user.size() > 0) {
+        Account user = AccountManager.instance.getAccount(new SQLSearch(
+                "username=? AND password=?;", 
+                new Object[]{username, password}
+        ));
+        if(user != null) {
             // found matching account
             result = true;
         }
@@ -109,23 +119,21 @@ public class AccountManager {
     
     public int getUserID(Account acc){
         int result = -1;   // returns -1 if account doesn't exist
-        List<Account> user = AccountManager.instance.getAccount(()-> {
-            return new SQLSearch("username=?", new Object[]{acc.getUsername()});
-        });
-        for(Account item : user) {      // should only be one
-            result = item.getUserID();
-        }
+        Account user = AccountManager.instance.getAccount(new SQLSearch(
+                "username=?;", 
+                new Object[]{acc.getUsername()}
+        ));
+        result = user.getUserID();
         return result;
     }
     
     public String getEmail(Account acc){
         String result = null;   // returns null if account doesn't exist
-        List<Account> user = AccountManager.instance.getAccount(()-> {
-            return new SQLSearch("userID=?", new Object[]{acc.getUserID()});
-        });
-        for(Account item : user) {      // should only be one
-            result = item.getEmail();
-        }
+        Account user = AccountManager.instance.getAccount(new SQLSearch(
+                "userID=?;", 
+                new Object[]{acc.getUserID()}
+        ));
+        result = user.getEmail();
         return result;
     }
     
@@ -141,15 +149,16 @@ public class AccountManager {
             return false;
         }
         try(var conn = java.sql.DriverManager.getConnection(sqlURL, sqlUser, sqlPass)) {
-            var query = ParameterizedStatement.executeOneQuery(conn, 
-                    "SELECT * FROM users WHERE username=? AND email=?", 
-                    username, email).getAll();
+            var query = AccountManager.instance.getAccount(new SQLSearch(
+                    "username=? OR email=?;", 
+                    new Object[]{username, email}
+            ));
             // if username or email doesn't already exist
-            if(query.isEmpty()) {
+            if(query == null) {
                 // add to database
                 ParameterizedStatement.executeOneUpdate(conn, 
                         "INSERT INTO users(username, password, email, birthday)"
-                                + " VALUES(?,?,?,STR_TO_DATE(?, '%y,%m,%d')", 
+                                + " VALUES(?,?,?,?);", 
                         username, password, email, birthday);
                 return true;
             }
@@ -162,26 +171,13 @@ public class AccountManager {
         }
     }
     
-    public List<Account> getAccount(SQLAccountSpec predicate) {
-        try(var conn = java.sql.DriverManager.getConnection(sqlURL, sqlUser, sqlPass)) {
-            String querystring = "SELECT " + String.join(",", Account.fields) + 
-                    "FROM users WHERE " + predicate.query;
-            var result = new ArrayList<Account>();
-            for(var item : ParameterizedStatement.executeOneQuery(conn, querystring, predicate.params)) {
-                result.add(Account.fromSQL(item));
-            }
-            return result;
-        } catch(SQLException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-    
     public boolean isAdmin(Account acc){
         boolean result = false;
-        List<Account> user = AccountManager.instance.getAccount(()-> {
-            return new SQLSearch("userID=? AND admin=1", new Object[]{acc.getUserID()});
-        });
-        if(user.size() > 0) {
+        Account user = AccountManager.instance.getAccount(new SQLSearch(
+                "userID=? AND admin=1;", 
+                new Object[]{acc.getUserID()}
+        ));
+        if(user != null) {
             // user is admin
             result = true;
         }
@@ -192,7 +188,7 @@ public class AccountManager {
         // update admin column for user in database
         try(var conn = java.sql.DriverManager.getConnection(sqlURL, sqlUser, sqlPass)) {
             ParameterizedStatement.executeOneUpdate(conn, 
-                    "UPDATE users SET admin=? WHERE userID=?", status, acc.getUserID());
+                    "UPDATE users SET admin=? WHERE userID=?;", status, acc.getUserID());
             // update avatar variable in Account object
             acc.isAdmin = status;
             
@@ -205,12 +201,11 @@ public class AccountManager {
     
     public byte[] getAvatar(Account acc){
         byte[] result = null;   // returns null if account doesn't exist
-        List<Account> user = AccountManager.instance.getAccount(()-> {
-            return new SQLSearch("userID=?", new Object[]{acc.getUserID()});
-        });
-        for(Account item : user) {      // should only be one
-            result = item.getAvatar();
-        }
+        Account user = AccountManager.instance.getAccount(new SQLSearch(
+                "userID=?;", 
+                new Object[]{acc.getUserID()}
+        ));
+        result = user.getAvatar();
         return result;
     }
 
@@ -218,7 +213,7 @@ public class AccountManager {
         // update avatar column for user in database
         try(var conn = java.sql.DriverManager.getConnection(sqlURL, sqlUser, sqlPass)) {
             ParameterizedStatement.executeOneUpdate(conn, 
-                    "UPDATE users SET avatar=? WHERE userID=?", img, acc.getUserID());
+                    "UPDATE users SET avatar=? WHERE userID=?;", img, acc.getUserID());
             // update avatar variable in Account object
             acc.avatar = img;
             
@@ -230,10 +225,10 @@ public class AccountManager {
     }    
     
     static void clear() {
-        try(var conn = java.sql.DriverManager.getConnection(sqlURL)) {
+        try(var conn = java.sql.DriverManager.getConnection(sqlURL, sqlUser, sqlPass)) {
             ParameterizedStatement.executeOneUpdate(conn,
                     // deletes everything from users table
-                    "DELETE FROM users");
+                    "DELETE FROM users WHERE userID IS NOT NULL;");
         } catch(SQLException ex) {
             throw new RuntimeException(ex);
         }

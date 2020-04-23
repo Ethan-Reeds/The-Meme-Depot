@@ -56,7 +56,7 @@ public class UserPage extends HttpServlet {
         String userName = pathParams[1];
 
         Account account = AccountManager.instance.getAccount(new SQLSearch(
-                "username=?", 
+                "username=?;", 
                 new Object[]{userName}
         ));
         

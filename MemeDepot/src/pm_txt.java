@@ -35,11 +35,11 @@ public class pm_txt {
             pw.println("false");
         else {
             Account a = AccountManager.instance.getAccount(new SQLSearch(
-                    "username=?", 
+                    "username=?;", 
                     new Object[]{from}
             ));
             Account b = AccountManager.instance.getAccount(new SQLSearch(
-                    "username=?", 
+                    "username=?;", 
                     new Object[]{to}
             ));
             Message msgObj = new Message(msg, a, b);

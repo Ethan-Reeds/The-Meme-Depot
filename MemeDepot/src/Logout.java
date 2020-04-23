@@ -10,18 +10,25 @@ public class Logout extends HttpServlet
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException{
         resp.setContentType("text/plain");
         var pw = resp.getWriter();
-        var username = req.getParameter("username");
+        var sess = req.getSession();
+        var sess_username = sess.getAttribute("username");
+        var sess_password = sess.getAttribute("password");
         
-        if (username == null)
-            pw.print("False");
-        else if (AccountManager.logout(username)){
-            req.getSession().removeAttribute("username");
+        var account = AccountManager.instance.getAccount(new SQLSearch(
+                "username=? AND password=?;", 
+                new Object[]{sess_username, sess_password}
+        ));
+
+        if (AccountManager.logout(account)) {
+            account.loggedIn = false;
+            sess.removeAttribute("username");
+            sess.removeAttribute("password");
+            sess.removeAttribute("account");
             pw.print("True");
+            pw.printf("Logged out");
         }
         else{
             pw.print("False");
         }
-        pw.printf("Logged out");
     }
-
 }
