@@ -80,9 +80,13 @@ public class UserPage extends HttpServlet {
                 }
         }
         
+        boolean loggedIn = currentUser != null && currentUser.equalsIgnoreCase(userName);
+        
         //Woo everything is good, let jsp handle the rest
         req.setAttribute("account", account);
-        
+        req.setAttribute("loggedIn", loggedIn);
+        req.setAttribute("settings", PrivacySetting.values());
+        req.setAttribute("test", new String[] {"One", "Two", "Three"});
         
         byte[] avatar = account.getAvatar();
         
