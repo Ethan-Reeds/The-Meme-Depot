@@ -87,7 +87,6 @@ public class PrivacyTest {
         TestUtility.fetch("/srv/logout?username=pelican2");
         
         String response = TestUtility.fetch("/srv/user/pelican2");
-        System.out.println(response);
         assertTrue(response.contains("You must be logged in to view this account."));
         
         //Login in to another account
@@ -96,5 +95,27 @@ public class PrivacyTest {
         
         response = TestUtility.fetch("/srv/user/pelican2");
         assertFalse(response.contains("You must be logged in to view this account."));
+    }
+    
+    @Test
+    public void TestPrivatePrivacy() {
+        TestUtility.post("/srv/register", "username=pelican46", "password=gtuyfty", "email=tdw@ttle2.com", 
+                         "day=27", "year=2000", "month=October");
+        TestUtility.post("/srv/privacy", "username=pelican46", "setting=Private");
+        
+        String response = TestUtility.fetch("/srv/user/pelican46");
+        assertTrue(response.contains("tdw@ttle2.com"));
+        
+        TestUtility.fetch("/srv/logout?username=pelican46");
+        
+        response = TestUtility.fetch("/srv/user/pelican46");
+        assertTrue(response.contains("This account is private."));
+        
+        //Login in to another account
+        TestUtility.post("/srv/register", "username=pelican3", "password=12aawdwd3", "email=tdwdw@turtle2.com", 
+                         "day=27", "year=2000", "month=October");
+        
+        response = TestUtility.fetch("/srv/user/pelican46");
+        assertTrue(response.contains("This account is private."));
     }
 }
