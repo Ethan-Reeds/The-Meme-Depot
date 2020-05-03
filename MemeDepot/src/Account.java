@@ -9,6 +9,7 @@
  * @author Ethan Reeds
  * TODO make testing harness for this
  */
+import java.util.*;
 public class Account {
     protected String username;
     protected String password;
@@ -23,7 +24,7 @@ public class Account {
     protected boolean isAdmin;  // default is false you can set it to true
     protected byte[] avatar;    // default is to NULL;
     protected boolean loggedIn;
-    
+    protected HashMap<String, ArrayList<Message>> messages; 
     public Account(String Username, String Password, String Email, String Year, String Month, String Day, String Phone){
         username = Username;        // check for xxxxx@xxxxx
         password = Password;
@@ -32,11 +33,37 @@ public class Account {
         phone = Phone;
         isAdmin = false;
         avatar = null;
-        
+        messages = new HashMap(); 
         userID = nextID;
         nextID++;
     }
     
+    ArrayList<Message> getMessagesFromUser(String username) {
+        if (messages.containsKey(username)) {
+            return messages.get(username);
+        } 
+        return null; 
+    }
+    HashMap<String, ArrayList<Message>> getAllMessages() {
+        return messages;
+    }
+    void addNewMessage(String from, String to, String msg) {
+        if (email == from) {
+            if (messages.containsKey(to)) {
+                messages.get(to).add(new Message(msg, from, to));
+            } else {
+                messages.put(to, new ArrayList<Message>());
+                messages.get(to).add(new Message(msg, from, to)); 
+            } 
+        } else {
+            if (messages.containsKey(from)) {
+                messages.get(from).add(new Message(msg, from, to));
+            } else {
+                messages.put(from, new ArrayList<Message>());
+                messages.get(from).add(new Message(msg, from, to));
+            }
+        }
+    }
     public int getUserID(){
         return userID;
     }
@@ -73,8 +100,4 @@ public class Account {
     }
     
 }
-
-
-
-
 
