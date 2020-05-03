@@ -25,6 +25,7 @@ public class AccountManager {
     
     
     public static boolean login(String username, String password) {
+        password = encryptThisString(password);
         if (accountList.isEmpty() || !accountList.containsKey(username)){
             return false;
         } 
@@ -47,6 +48,7 @@ public class AccountManager {
     } 
     
     public static boolean verifyUser(String username, String password){
+        password = encryptThisString(password);
         // if username exists
         if(accountList.containsKey(username)) {
             // if password matches username
