@@ -7,8 +7,8 @@
 		<link rel="stylesheet" href="css/bootstrap.min.css">
 		<link rel="stylesheet" href="css/custom1.css">  
 		<link rel="stylesheet" href="jquery-ui-1.12.1/jquery-ui.css">
-    	<script src="jquery.min.js"></script>
-    	<script src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
+                <script src="jquery.min.js"></script>
+                <script src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
 		<script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/chat.js"></script>
 	</head>
@@ -47,12 +47,14 @@
         <div class = "chatbox"> 
             <div class = "sidebar"> 
                 <div class = "search-box">
-                    <input type = "text" class = "usersearch" placeholder = "To">
+                    <input type = "text" class = "usersearch" placeholder = "To" id = "to">
                 </div>  
                 <div id = "userSearchList"></div>
                 <div class = "message-box">
-                    <textarea type = "text" class = "message" placeholder = "Message"  rows = "8" cols = "50">....</textarea>
-                </div>   
+                    <textarea type = "text" class = "message" placeholder = "Message"  rows = "8" cols = "50" id = "message">....</textarea>
+				</div> 
+				<button id = "submitMessage">Submit</button>  
+                                <p id = "status"></p>
             </div>
             <div class = "messages">
                 <h3> Messages <h3> 
