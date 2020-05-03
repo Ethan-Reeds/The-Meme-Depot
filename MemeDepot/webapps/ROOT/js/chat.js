@@ -77,32 +77,44 @@ function setup() {
             }
         }
     });
-    $.get("/srv/getmessages", function(response) {   
-        let lines = response.split("\n");
-        let addNewUser = false; 
-        let addMessages = false;
-        
-        for (let line of lines) {
-            if (line[0] === '#') {
-                addNewUser = true;
-                addNewMessages = false;
-                currentUser = ""; 
-                continue;
+    $.ajax({
+        type: "POST",
+        url: "/srv/getmessages",
+        data: formData,
+        contentType: false, 
+        processData: false,
+        success: (data) => {
+            let lines = data.split("\n");
+            let addNewUser = false; 
+            let addMessages = false;
+
+            for (let line of lines) {
+                if (line[0] === '#') {
+                    addNewUser = true;
+                    addNewMessages = false;
+                    currentUser = ""; 
+                    continue;
+                }
+                if (addNewUser) {
+                    currentUserMessages[line] = [];
+                    currentUser = line;
+                    addNewUser = false; 
+                    addMessages = true;
+                    continue;
+                }
+                if (addNewMessages) {
+                    let msgData = line.split(":");
+                    currentUserMessages[currentUser].push([msgData[0], msgData[1]]);
+                }
             }
-            if (addNewUser) {
-                currentUserMessages[line] = [];
-                currentUser = line;
-                addNewUser = false; 
-                addMessages = true;
-                continue;
-            }
-            if (addNewMessages) {
-                let msgData = line.split(":");
-                currentUserMessages[currentUser].push([msgData[0], msgData[1]]);
-            }
+            localStorage.setItem("currentUserMessages", currentUserMessages);
+        },
+        error: (xhr,status,err) => {
+            $("#statusdiv").html("Something went wrong: status="+status+" err="+err+" resp=");
         }
-        localStorage.setItem("currentUserMessages", currentUserMessages);
+
     });
+    
     let userSearch = $('.usersearch');
     let messagesList = $('.messageList');
     messagesList.html(showMessages(messagesList));
