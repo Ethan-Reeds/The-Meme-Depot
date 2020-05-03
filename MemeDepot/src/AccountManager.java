@@ -84,7 +84,7 @@ public class AccountManager {
             }
             return false;
         }
-        accountList.put(username, new Account(username, password, email, year, month, day, phone));
+        accountList.put(email, new Account(username, password, email, year, month, day, phone));
         return true;
     }
   
