@@ -2,26 +2,26 @@
 
 let users = ["abc", "def", "ghi", "ijk", "lmn", "opq", "axy"];
 
-let currentUser = "abc";
+let currentUser;
 let currentUserMessages = {
-    "def" : [
-        ['abc', "Hey how are you def?"],
-        ['def', "I am fine what about you?"],
-        ['abc', "I am doing good"], 
-        ['abc', "Just watching movies all day."]
-    ],
-    "ghi" : [
-        ['abc', "Hey how are you ghi?"],
-        ['ghi', "I am fine what about you?"],
-        ['abc', "I am doing good"], 
-        ['abc', "Just watching movies all day."]
-    ],
-    "axy" : [
-        ['abc', "Hey how are you axy?"],
-        ['axy', "I am fine what about you?"],
-        ['abc', "I am doing good"], 
-        ['abc', "Just watching movies all day."]
-    ]
+//    "def" : [
+//        ['abc', "Hey how are you def?"],
+//        ['def', "I am fine what about you?"],
+//        ['abc', "I am doing good"], 
+//        ['abc', "Just watching movies all day."]
+//    ],
+//    "ghi" : [
+//        ['abc', "Hey how are you ghi?"],
+//        ['ghi', "I am fine what about you?"],
+//        ['abc', "I am doing good"], 
+//        ['abc', "Just watching movies all day."]
+//    ],
+//    "axy" : [
+//        ['abc', "Hey how are you axy?"],
+//        ['axy', "I am fine what about you?"],
+//        ['abc', "I am doing good"], 
+//        ['abc', "Just watching movies all day."]
+//    ]
 };
 
 
@@ -43,6 +43,66 @@ function showMessages() {
 }
 
 function setup() {
+    console.log(window.localStorage.getItem("currentUser"));
+    let submitMessage = $('#submitMessage');
+    currentUser = localStorage.getItem('currentUser');
+    submitMessage.click(()=>{
+        let to = $('#to').val();
+        let message = $("#message").val();
+        if (to != "") {
+            if (message != "") {
+                console.log(to+':'+message);
+                let formData = new FormData();
+
+                formData.append("to", to);
+                formData.append("message", message);
+                $.ajax({
+                    type: "POST",
+                    url: "/srv/addmessage",
+                    data: formData,
+                    contentType: false, 
+                    processData: false,
+                    success: (data) => {
+                        if (data == "False") {
+                            $("#statusdiv").html("Error");
+                        } else {
+                            $("#statusdiv").html("Successfully sent the message");
+                        }
+                    },
+                    error: (xhr,status,err) => {
+                        $("#statusdiv").html("Something went wrong: status="+status+" err="+err+" resp=");
+                    }
+
+                });
+            }
+        }
+    });
+    $.get("/srv/getmessages", function(response) {   
+        let lines = response.split("\n");
+        let addNewUser = false; 
+        let addMessages = false;
+        
+        for (let line of lines) {
+            if (line[0] === '#') {
+                addNewUser = true;
+                addNewMessages = false;
+                currentUser = ""; 
+                continue;
+            }
+            if (addNewUser) {
+                currentUserMessages[line] = [];
+                currentUser = line;
+                addNewUser = false; 
+                addMessages = true;
+                continue;
+            }
+            if (addNewMessages) {
+                let msgData = line.split(":");
+                currentUserMessages[currentUser].push([msgData[0], msgData[1]]);
+            }
+        }
+        localStorage.setItem("currentUserMessages", currentUserMessages);
+    });
     let userSearch = $('.usersearch');
     let messagesList = $('.messageList');
     messagesList.html(showMessages(messagesList));
