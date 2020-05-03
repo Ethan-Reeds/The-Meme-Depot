@@ -21,23 +21,20 @@ public class Message {
     public Timestamp timestamp; // for organizing the messages
     public long time_sort;  // used for quick sort sorting
     
-    public Message(byte[] data,Account a,Account b){
+    public Message(byte[] data,String from,String to){
         message = null;
         img = data;
-        sender = a.getUsername();
-        recipient = b.getUsername();
+        sender = from;
+        recipient = to;
         timestamp = new Timestamp(System.currentTimeMillis());
         time_sort = timestamp.getTime();       
     }
-    public Message(String data,Account a,Account b){
+    public Message(String data,String from,String to){
         img = null;
         message = data;
-        sender = a.getUsername();
-        recipient = b.getUsername();
+        sender = from;
+        recipient = to;
         timestamp = new Timestamp(System.currentTimeMillis());
         time_sort = timestamp.getTime();       
-    }
-    
-    
-    
+    }    
 }
