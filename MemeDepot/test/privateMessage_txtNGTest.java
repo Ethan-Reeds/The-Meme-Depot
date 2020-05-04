@@ -54,10 +54,10 @@ public class privateMessage_txtNGTest {
     @BeforeMethod
     public void make_accts(){
         messageManager mInstance = new messageManager();
-        Account acct1 = new Account("alecBaldwin@imGreat.com", "30Rock!","alecBaldwin@imGreat.com","220","04","20","12323234");
-        Account acct2 = new Account("markyMark@funkyBunch.com", "imAnActorN0w", "markyMark@funkyBunch.com","2343","02","35","394858783");
-        AccountManager.addUser(acct1.username,acct1.password,acct1.email,"220","04","20","12323234");
-        AccountManager.addUser(acct2.username,acct2.password,acct2.email,"2343","02","35","394858783");
+        Account acct1 = new Account("alecBaldwin@imGreat.com", "30Rock!","alecBaldwin@imGreat.com","220","04","20");
+        Account acct2 = new Account("markyMark@funkyBunch.com", "imAnActorN0w", "markyMark@funkyBunch.com","2343","02","35");
+        AccountManager.addUser(acct1.username,acct1.password,acct1.email,"220","04","20");
+        AccountManager.addUser(acct2.username,acct2.password,acct2.email,"2343","02","35");
     }
         
     static String fetch(String... allurls) {
