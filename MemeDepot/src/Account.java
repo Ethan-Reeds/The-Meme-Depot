@@ -1,9 +1,5 @@
 import java.util.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -31,13 +27,8 @@ public class Account {
     protected byte[] avatar;    // default is to NULL;
     protected boolean loggedIn;
     
-    // MySQL database connection info
-    static String sqlURL = "jdbc:mysql://localhost:3306/memedepot";
-    static String sqlDriver = "com.mysql.jdbc.Driver";
-    static String sqlUser = "root";
-    static String sqlPass = "HhLlHh@972";
-    
-    public Account(String Username, String Password, String Email, String Year, String Month, String Day){
+    public Account(String Username, String Password, String Email, String Year, 
+            String Month, String Day){
         this.username = Username;        // check for xxxxx@xxxxx
         this.password = Password;
         this.email = Email;
@@ -45,7 +36,8 @@ public class Account {
         this.isAdmin = false;
         this.avatar = null;
         
-        try(var conn = java.sql.DriverManager.getConnection(sqlURL, sqlUser, sqlPass)) {
+        try(var conn = java.sql.DriverManager.getConnection(
+                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
             var update = ParameterizedStatement.executeOneUpdate(conn, 
                     "SELECT userID FROM users WHERE username=?;", 
                     this.username);
@@ -61,9 +53,9 @@ public class Account {
             M.get("username").asString(),
             M.get("password").asString(),
             M.get("email").asString(),
-            M.get("birthday").asString(),
-            M.get("admin").asString(),
-            M.get("avatar").asString()
+            M.get("birthday").asString().substring(0, 5),   // year xxxx
+            M.get("birthday").asString().substring(6, 8),   // month xx
+            M.get("birthday").asString().substring(9)       // day xx
         );
     }
     
@@ -84,7 +76,18 @@ public class Account {
     }
     public void setLoggedIn(boolean status){
         this.loggedIn = status;
+        
+        try(var conn = java.sql.DriverManager.getConnection(
+                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
+            // update status in database
+            ParameterizedStatement.executeOneUpdate(conn,
+                    "UPDATE users SET loggedIn=? WHERE userID=?",
+                    status, this.userID);
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
+    
     public String getPassword(){
         return this.password;
     }
@@ -96,10 +99,31 @@ public class Account {
     }
     public boolean setAvatar(byte[] newAvatar){
         this.avatar = newAvatar;
+        
+        try(var conn = java.sql.DriverManager.getConnection(
+                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
+            // update avatar in database
+            ParameterizedStatement.executeOneUpdate(conn,
+                    "UPDATE users SET avatar=? WHERE userID=?",
+                    newAvatar, this.userID);
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        
         return true;
     }
     public void setIsAdmin(boolean hasAdminPrivledges){
         this.isAdmin = hasAdminPrivledges;
+        
+        try(var conn = java.sql.DriverManager.getConnection(
+                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
+            // update admin in database
+            ParameterizedStatement.executeOneUpdate(conn,
+                    "UPDATE users SET admin=? WHERE userID=?",
+                    hasAdminPrivledges, this.userID);
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
     
 }

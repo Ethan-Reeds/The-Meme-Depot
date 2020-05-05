@@ -27,7 +27,7 @@ public class Post {
         try(var conn = java.sql.DriverManager.getConnection(
                 SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
             var update = ParameterizedStatement.executeOneUpdate(conn, 
-                    "SELECT postID FROM posts WHERE userID=?", 
+                    "SELECT postID FROM posts WHERE userID=?;", 
                     this.userID);
             // sets postID to auto-incremented int from database
             this.postID = update;
@@ -55,8 +55,18 @@ public class Post {
         return this.image;
     }
     
-    public void setImage(byte[] image) {
-        this.image = image;
+    public void setImage(byte[] newImage) {
+        this.image = newImage;
+        
+        try(var conn = java.sql.DriverManager.getConnection(
+                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
+            // update image in database
+            ParameterizedStatement.executeOneUpdate(conn,
+                    "UPDATE posts SET image=? WHERE postID=?",
+                    newImage, this.postID);
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
     
     public int getLikes() {
@@ -65,10 +75,30 @@ public class Post {
     
     public void addLike() {
         this.likes += 1;
+        
+        try(var conn = java.sql.DriverManager.getConnection(
+                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
+            // update likes in database
+            ParameterizedStatement.executeOneUpdate(conn,
+                    "UPDATE posts SET likes=? WHERE postID=?",
+                    this.likes, this.postID);
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
     
     public void removeLike() {
         this.likes -= 1;
+        
+        try(var conn = java.sql.DriverManager.getConnection(
+                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
+            // update likes in database
+            ParameterizedStatement.executeOneUpdate(conn,
+                    "UPDATE posts SET likes=? WHERE postID=?",
+                    this.likes, this.postID);
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
     
     public String getPostDate() {
@@ -81,5 +111,15 @@ public class Post {
     
     public void setDeleteDate(String date) {
         this.delete_date = date;
+        
+        try(var conn = java.sql.DriverManager.getConnection(
+                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
+            // update delete date in database
+            ParameterizedStatement.executeOneUpdate(conn,
+                    "UPDATE posts SET delete_date=? WHERE postID=?",
+                    this.delete_date, this.postID);
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }
