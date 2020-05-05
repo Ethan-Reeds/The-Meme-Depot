@@ -37,6 +37,25 @@ public class PostManager {
         }
     }
     
+    public Tag getTag(SQLSearch search) {
+        try(var conn = java.sql.DriverManager.getConnection(
+                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
+            String querystring = "SELECT * FROM tag_info WHERE " + search.query;
+            var result_list = new ArrayList<Tag>();
+            for(var item : ParameterizedStatement.executeOneQuery(conn, querystring, search.params)) {
+                result_list.add(Tag.fromSQL(item));
+            }
+            if(result_list.size() > 0) {
+                return result_list.get(0);
+            }
+            else {
+                return null;
+            }
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
     public static boolean createPost(Account acc, byte[] img) {
         // postID is auto-incremented
         // likes is 0 by default
@@ -85,17 +104,22 @@ public class PostManager {
         }
         try(var conn = java.sql.DriverManager.getConnection(
                 SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
-            var query = ParameterizedStatement.executeOneQuery(conn, 
-                    "SELECT * FROM tag_info WHERE text=?", 
-                    text).getAll();
-            if(query.size() > 0) {
-                // tag doesn't exist yet - create new tag
+            var tag_query = PostManager.instance.getTag(new SQLSearch(
+                        "text=?;", new Object[]{text}
+                ));
+            if(tag_query == null) {
+                // tag doesn't exist yet - create it
                 ParameterizedStatement.executeOneUpdate(conn,
-                        "INSERT INTO tag_info(text) VALUES(?)",
-                        text);
+                        "INSERT INTO tag_info(text) VALUES(?);", text);
+                // reassign tag_query to new tag
+                tag_query = PostManager.instance.getTag(new SQLSearch(
+                        "text=?;", new Object[]{text}
+                ));
             }
-            // add tag to post
-            
+            ParameterizedStatement.executeOneUpdate(conn,
+                    "INSERT INTO post_tags(postID, tagID) VALUES(?,?);",
+                    post.getPostID(), tag_query.getTagID());
+            return true;
         } catch(SQLException ex) {
             throw new RuntimeException(ex);
         }
