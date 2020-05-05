@@ -16,6 +16,8 @@ public class Account {
     protected String birthdate;
     protected String phone;
     
+    protected PrivacySetting privacy;
+    
     protected int userID;       // is assigned not given
     protected static int nextID = 1000;
 
@@ -33,6 +35,7 @@ public class Account {
         isAdmin = false;
         avatar = null;
         
+        privacy = PrivacySetting.Public;
         userID = nextID;
         nextID++;
     }
@@ -70,6 +73,14 @@ public class Account {
     }
     public void setIsAdmin(boolean hasAdminPrivledges){
         isAdmin = hasAdminPrivledges;
+    }
+    
+    public PrivacySetting getPrivacy() {
+        return privacy;
+    }
+    
+    public void setPrivacy(PrivacySetting privacy) {
+        this.privacy = privacy;
     }
     
 }

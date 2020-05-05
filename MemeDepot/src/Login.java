@@ -17,7 +17,7 @@ public class Login extends HttpServlet
             pw.printf("Null");
         } else {
             
-            if (sess.getAttribute(username) != null || !AccountManager.verifyUser(username, password)){
+            if (sess.getAttribute("username") != null || !AccountManager.verifyUser(username, password)){
                 // checks to see if you're already logged in or have an account
                 pw.printf("False");
             }

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
     <head>
         <title>MemeDepot ${account.getUsername()}</title>
@@ -10,6 +11,7 @@
         <script src="/jquery.min.js"></script>
         <script src="/jquery-ui-1.12.1/jquery-ui.min.js"></script>
         <script src="/js/bootstrap.bundle.min.js"></script>
+        <script src="/js/privacy.js"></script>
     </head>
     <style>
         .text-overflow-center {
@@ -53,9 +55,17 @@
                 <!--data:image/gif;base64,${image}}-->
                 <img src="data:image/gif;base64,${image}" class="img-fluid rounded">
                 <div class="text-overflow-center">
-                    ${account.getUsername()}
-                    <br>
-                    ${account.getEmail()}
+                    <p id="username" style="margin: 0em;">${account.getUsername()}</p>
+                    <p id="email" style="margin: 0em;">${account.getEmail()}</p>
+                </div>
+                <c:if test="${loggedIn}">
+                    <select class="form-control" id="privacySelect" onchange="changePrivacy();">
+                    <c:forEach var="setting" items="${settings}">
+                        <option value="${setting.toString()}" ${account.privacy == setting ? 'selected' : ''}>${setting.toString()}</option>
+                    </c:forEach>
+                    </select>
+                </c:if>
+
                 </div>
             </div>
         </div>

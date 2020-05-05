@@ -63,7 +63,10 @@ public class Register extends HttpServlet{
                 pw.println("Username:"+username);
                 pw.println("Password:"+password);
                 pw.println("<br>");
-                pw.println("True"); 
+                pw.println("True");
+                //Actually log in
+                AccountManager.login(username, password);
+                req.getSession().setAttribute("username", username );
             }
             else {
                 pw.println("Sorry bruh somethin aint qutite right");
