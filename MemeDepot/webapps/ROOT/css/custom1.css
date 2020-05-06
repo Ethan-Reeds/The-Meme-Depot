@@ -1,6 +1,6 @@
 #logoText {
     font-weight : bold; 
-    color : black;
+    color : white;
 }
 
 #logoText:hover {
@@ -11,6 +11,14 @@
 }
 #post{
     text-align: center;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    background: rgba(0,0,0,0.8);
+    max-width: 550px;
+    margin:  auto;
+    display: flex;
+    padding: 50px;
+    
 }
 .wrapper{
     padding: 50px;
@@ -19,6 +27,9 @@
     align-items: center;
     flex-wrap:wrap;
     height: 100vh;
+}
+#pn{
+    padding: 20px;
 }
 button{
     flex: 1;
@@ -41,190 +52,24 @@ button{
 butthon:hover{
     background position: 500% 100%;
 }
-
-* {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-
-
-
-.meme {
-    margin-left : 33%;
-    margin-top : 100px; 
-    width : 600px;
-    height : 700px;  
-    padding-bottom : 50px;
-}
-
-.memeImage {
-    width : 100%;
-    height : 600px; 
-} 
-
-.likeButton { 
-    padding-top : 20px;
-    padding-right : 20px; 
-    outline : none;
-    border : none;
-    background : white;
-}
-
-.likeButton:focus {
-    outline : none;
-    border : none;
-}
-
-
-
-
-.commentButton {
-    padding-top : 20px;
-    padding-right : 20px; 
-    outline : none;
-    border : none;
-    background-color: white;
-}
-
-
-.commentButton:focus {
-    outline : none;
-    border : none;
-}
-
-
-.comments {
-    font-family : sans-serif;
-    font-weight : bold;
-    font-size : 20px; 
-    transition : 0.9s all linear;
-}
-
-.commentsList {
-    margin-left : 33%;
-    margin-top : 50px; 
+#ac{
+    text-align: center;
+    border-radius: 2px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    background: rgba(0,0,0,0.8);
+    max-width: 750px;
+    margin:  auto;
+    display: flex;
+    padding: 100px;
     
 }
-
-.chatbox {
-    margin-left : 10%;
-    margin-top : 100px;
-    /*width : 1500px;
-    height : 1000px; */
-    display : flex; 
-    flex-direction: row;
-    /* border : 2px solid black; */
-}
-
-
-
-.usersearch {
-    margin : none;
-    padding : none;
-    width : 300px; 
-    outline : none;
-    border : none;
-    background-color: black;
-    color : white;
-    font-size : 30px;
-}
-
-.usersearch:focus {
-    outline : none;
-    border : none;
-}
-
-
-
-.search-box {
-    background : black;
-    border-radius : 40px;
-    height : 80px; 
-    padding : 20px; 
-    width : 350px; 
+#space{
+    padding: 10px;
     
 }
-
-.messages {
-    margin-left : 50px;
-}
-
-.messages  h3 {
-    font-family : cursive;
-    font-weight : bold;
-}
-
-
-.message-box {
-    background-color : black;
-    border-radius : 40px;
-    margin-top : 50px;
-}
-
-.message {
-    background-color: black;
-    color : white;
-    outline : none;
-    border : none;
-    border-radius : 40px; 
-    padding : 20px 0px 0px 20px; 
-    font-size : 15px;
-    font-family : cursive;
-    font-weight : bold;
+#acc{
+	margin: 25px;
+	padding: 10px;
+    text-align: bottom;
     
-}
-
-.suggestions {
-    background-color : white;
-    border-radius : 40px;
-    margin-top : 20px;
-    width : 20em;
-}
-
-.suggestions h4 {
-    color : black;
-    font-size : 20px;
-    font-family : cursive;
-    font-weight : bold;
-}
-
-.msg {
-    font-size : 20px;
-    border-radius : 20px;
-    background-color : white;
-    color : black;
-    padding : 20px;
-    border : 2px solid black;
-    
-}
-
-.userOfMsg {
-    width : 100%;
-    overflow : hidden;
-}
-
-.currentUser {
-    font-size : 15px;
-    overflow : hidden;
-}
-
-.otherUser {
-    font-size : 15px;
-    overflow : hidden;
-}
-
-.msg:hover {
-    background-color : black;
-    color : white;
-}
-
-.messageList {
-    padding : 40px;
-    margin : 20px;
-}
-
-.messageList .messagesp {
-    color : black;
-    font-family : cursive;
-    font-weight : bold;
-    font-size : 20px;
 }
