@@ -66,9 +66,30 @@ public class UserPage extends HttpServlet {
             return;
         }
         
+        String currentUser = (String) req.getSession().getAttribute("username");
+        //Check for privacy concerns
+        switch(account.getPrivacy()) {
+            case Protected:
+                if(currentUser == null) {
+                    output.write("You must be logged in to view this account.");
+                    return;
+                }
+                break;
+            case Private:
+                if(currentUser == null || !currentUser.equalsIgnoreCase(userName)) {
+                    System.out.println(currentUser);
+                    output.write("This account is private.");
+                    return;
+                }
+        }
+        
+        boolean loggedIn = currentUser != null && currentUser.equalsIgnoreCase(userName);
+        
         //Woo everything is good, let jsp handle the rest
         req.setAttribute("account", account);
-        
+        req.setAttribute("loggedIn", loggedIn);
+        req.setAttribute("settings", PrivacySetting.values());
+        req.setAttribute("test", new String[] {"One", "Two", "Three"});
         
         byte[] avatar = account.getAvatar();
         

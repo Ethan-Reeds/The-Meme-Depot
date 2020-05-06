@@ -1,5 +1,10 @@
 import java.util.*;
 import java.sql.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -23,6 +28,7 @@ public class Account {
     protected String email;
     protected String birthdate;
     protected int userID;       // auto-increments in database
+    protected PrivacySetting privacy;
     protected boolean isAdmin;  // default is false you can set it to true
     protected byte[] avatar;    // default is to NULL;
     protected boolean loggedIn; // default is false
@@ -34,7 +40,17 @@ public class Account {
         this.email = Email;
         this.birthdate = Year + "-" + Month + "-" + Day;
         this.isAdmin = false;
-        this.avatar = null;
+        this.privacy = PrivacySetting.Public;
+  
+        //Set default avatar
+        try {
+            BufferedImage bImage = ImageIO.read(new File("assets/default_avatar.png"));
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ImageIO.write(bImage, "png", bos);
+            this.avatar = bos.toByteArray();
+        } catch(IOException e) {
+            this.avatar = null;
+        }
     }
     
     public static Account fromSQL(Map<String, ParameterizedStatement.Value> M) {
@@ -124,6 +140,14 @@ public class Account {
         } catch(SQLException ex) {
             throw new RuntimeException(ex);
         }
+    }
+    
+    public PrivacySetting getPrivacy() {
+        return privacy;
+    }
+    
+    public void setPrivacy(PrivacySetting privacy) {
+        this.privacy = privacy;
     }
     
 }

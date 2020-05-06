@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>The Meme Depot - Browse</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="jquery-ui-1.12.1/jquery-ui.css">
+    <script src="jquery.min.js"></script>
+    <script src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script defer src="js/browse.js"></script>
+</head>
+<style>
+    .text-overflow-center {
+        margin-left: -100%;
+        margin-right: -100%;
+        text-align: center;
+    }
+</style>
+<body>
+    <header> 
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" role = "navigation">
+            <a class="navbar-brand" href="#">
+                <img src="Meme Depot Logo.png" width="30" height="30" class="d-inline-block align-top logoStyle" alt="">
+                
+            </a>
+            <a class="navbar-brand" href="#" id = "logoText">Meme Depot</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+          
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                  <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="login.html">Log in</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="register.html">Register</a>
+                </li>
+              </ul>
+            </div>
+        </nav>
+    </header>
+
+    <template id="rowTemplate">
+        <div class="row mt-5">
+
+        </div>
+    </template>
+    <template id="colTemplate">
+        <div class="col-3 offset-2 justify-content-center">
+            <a href="http://localhost:2020/srv/user/[place]">
+                <img src="http://localhost:2020/srv/image/[place]" class="img-fluid rounded">
+                <div class="text-center overflow-hidden">
+                    Name
+                </div>
+            </a>
+        </div>
+    </template>
+
+    <div id="container" class="container-fluid" style="margin-top: 2em;">
+    </div>
+    <div class="d-flex justify-content-center">
+        <button type="button" class="btn btn-light" onclick="loadUsers();">Load More...</button>
+    </div>
+</body>
+</html>

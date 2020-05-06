@@ -30,7 +30,6 @@ public class Register extends HttpServlet{
         var year = req.getParameter("year");
         var month = req.getParameter("month");
         var day = req.getParameter("day");
-        var phone = req.getParameter("phone");
         
         if(email != null) {
             String[] parts = email.split("@");
@@ -49,10 +48,19 @@ public class Register extends HttpServlet{
             pw.println("Username:"+username);
             pw.println("Password:"+password);
             pw.println("<br>");
-            pw.println("True"); 
+            pw.println("True");
+            //Actually log in
+            AccountManager.login(username, password);
                 
         } else {
-                pw.println("Sorry bruh somethin aint qutite right");
+            // Check for duplicate username
+            if(AccountManager.instance.getAccount(new SQLSearch("username=?", new Object[]{username})) != null) {
+                //resp.sendError(409, "duplicate username");
+                pw.println("duplicate username");
+                pw.println("False");
+                return;
+            } else {
+                pw.println("Sorry bruh somethin aint quite right");
                 pw.println("False");
             }
     }
