@@ -27,54 +27,38 @@
 				<li class="nav-item active">
 				  <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
 				</li>
-				<li class="nav-item">
-				  <a class="nav-link" href="login.html">Log in</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="register.html">Register</a>
-                				<li class="nav-item">
-					<a class="nav-link" id="postb" onclick="myFunction()">Create a Post</a>
                 				<li class="nav-item">
 				  <a class="nav-link" href="Tags.html">Tags</a>
-				</li> 
+                				<li class="nav-item">
+				  <a class="nav-link" href="account.html">Account</a>
+				</li>
 			  </ul>
 			</div>
-		 
 		</nav>
 		</div>
 		</header> 
-<body>
+		<div id="space">
+		
+		</div>
+<div id="ac" style="color:white">
+<img src="dfp.jpg";>       
+<div id="pn">
+Profile Name	
+	
+</div>
+<div id="pn">
+Change Profile Picture:
 <br>
-<div id="post" hidden style="color:white">
+<div id="acc">
 <form action="/" enctype="multipart/form-data" method="post">
 
-    Upload image:
-    <input id="image-file" type="file" name="file" />
-    <input type="submit" value="Upload" />
+    Choose image:
+    <input id="image-file" type="file" name="file" /> 
+	<input type="submit" value="Upload" />
     <br>
-    Tags: Select all that apply<br>
-    <input type="checkbox" value ="18+?"> 18+?
-    <input type="checkbox" value ="Anime">Anime
-    <input type="checkbox" value ="Animals">Animals
-    <input type="checkbox" value ="Boomer">Boomer
-    <input type="checkbox" value ="Cringe">Cringe
-    <input type="checkbox" value ="Doge">Doge
-    <input type="checkbox" value ="Fresh">Fresh<br>
-    <input type="checkbox" value ="Nonsense">Nonsense
-    <input type="checkbox" value ="Original">Original
-    <input type="checkbox" value ="Simp">Simp
-    <input type="checkbox" value ="Stale">Stale
-    <input type="checkbox" value ="Schoolh">School<br>
-    <input type="checkbox" value ="ThrowingShade">Throwing Shade<br>
-</form>
+</form>	
 </div>
-<script>
-document.getElementById("postb")
-        .addEventListener("click", function() {
-  document.getElementById("postb").hidden = true;
-  document.getElementById("post").hidden = false;
-}, false);
-</script>
-
+</div>
+</div>
 </body>
 </html>
