@@ -76,6 +76,12 @@ public class AccountManager {
         // used this to see how to see if the key exists using .get() function
     }
     
+    public Account[] getUsers() {
+        var accounts = accountList.values();
+        Account[] users = accounts.toArray(new Account[accounts.size()]);
+        return users;
+    }
+    
     public static boolean addUser(String username, String password, String email, String year, String month, String day, String phone){
         if (!accountList.isEmpty()){
             if (!verifyUser(username, password)){
