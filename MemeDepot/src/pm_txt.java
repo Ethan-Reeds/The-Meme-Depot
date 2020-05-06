@@ -33,9 +33,15 @@ public class pm_txt {
             // might be able to handle this in the jquery 
         else if (msg == null)
             pw.println("false");
-        else{
-            Account a = AccountManager.accountList.get(from);
-            Account b = AccountManager.accountList.get(to);
+        else {
+            Account a = AccountManager.instance.getAccount(new SQLSearch(
+                    "username=?;", 
+                    new Object[]{from}
+            ));
+            Account b = AccountManager.instance.getAccount(new SQLSearch(
+                    "username=?;", 
+                    new Object[]{to}
+            ));
             Message msgObj = new Message(msg, a, b);
             messageManager.addMessage(msgObj);
 

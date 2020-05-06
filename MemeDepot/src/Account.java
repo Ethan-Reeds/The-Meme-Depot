@@ -1,4 +1,5 @@
-
+import java.util.*;
+import java.sql.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -17,80 +18,128 @@ import javax.imageio.ImageIO;
  * TODO make testing harness for this
  */
 public class Account {
+    protected static String[] fields = new String[]{
+        // all columns in users table in database
+        "userID", "email", "username", "password", "birthday", "admin", 
+        "avatar", "loggedIn"};
+    
     protected String username;
     protected String password;
     protected String email;
     protected String birthdate;
-    protected String phone;
-    
+    protected int userID;       // auto-increments in database
     protected PrivacySetting privacy;
-    
-    protected int userID;       // is assigned not given
-    protected static int nextID = 1000;
-
-    
     protected boolean isAdmin;  // default is false you can set it to true
     protected byte[] avatar;    // default is to NULL;
-    protected boolean loggedIn;
+    protected boolean loggedIn; // default is false
     
-    public Account(String Username, String Password, String Email, String Year, String Month, String Day, String Phone){
-        username = Username;        // check for xxxxx@xxxxx
-        password = Password;
-        email = Email;
-        birthdate = Year + "-" + Month + "-" + Day;
-        phone = Phone;
-        isAdmin = false;
-        avatar = null;
-        
-        privacy = PrivacySetting.Public;
-        userID = nextID;
-        nextID++;
-        
+    public Account(String Username, String Password, String Email, String Year, 
+            String Month, String Day){
+        this.username = Username;        // check for xxxxx@xxxxx
+        this.password = Password;
+        this.email = Email;
+        this.birthdate = Year + "-" + Month + "-" + Day;
+        this.isAdmin = false;
+        this.privacy = PrivacySetting.Public;
+  
         //Set default avatar
         try {
             BufferedImage bImage = ImageIO.read(new File("assets/default_avatar.png"));
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ImageIO.write(bImage, "png", bos);
-            avatar = bos.toByteArray();
+            this.avatar = bos.toByteArray();
         } catch(IOException e) {
-            avatar = null;
+            this.avatar = null;
         }
-        
+    }
+    
+    public static Account fromSQL(Map<String, ParameterizedStatement.Value> M) {
+        return new Account(
+            M.get("username").asString(),
+            M.get("password").asString(),
+            M.get("email").asString(),
+            M.get("birthday").asString().substring(0, 5),   // year xxxx
+            M.get("birthday").asString().substring(6, 8),   // month xx
+            M.get("birthday").asString().substring(9)       // day xx
+        );
     }
     
     public int getUserID(){
-        return userID;
+        try(var conn = java.sql.DriverManager.getConnection(
+                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
+            var query = ParameterizedStatement.executeOneQuery(conn, 
+                    "SELECT userID FROM users WHERE username=?;", 
+                    this.username).getAll();
+            // sets userID to auto-incremented int from database
+            // get the value of key "userID" in 1st result of query as an int
+            this.userID = query.get(0).get("userID").asInt();
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        return this.userID;
     }
     
     public String getUsername(){
-        return username;
+        return this.username;
     }
     
     public String getEmail() {
-        return email;
+        return this.email;
     }
     
     public boolean getLoggedIn(){
-        return loggedIn;
+        return this.loggedIn;
     }
     public void setLoggedIn(boolean status){
-        loggedIn = status;
+        this.loggedIn = status;
+        
+        try(var conn = java.sql.DriverManager.getConnection(
+                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
+            // update status in database
+            ParameterizedStatement.executeOneUpdate(conn,
+                    "UPDATE users SET loggedIn=? WHERE userID=?;",
+                    status, this.userID);
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
+    
     public String getPassword(){
-        return password;
+        return this.password;
     }
     public boolean getIsAdmin(){
-        return isAdmin;
+        return this.isAdmin;
     }
     public byte[] getAvatar(){
-        return avatar;
+        return this.avatar;
     }
     public boolean setAvatar(byte[] newAvatar){
-        avatar = newAvatar;
+        this.avatar = newAvatar;
+        
+        try(var conn = java.sql.DriverManager.getConnection(
+                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
+            // update avatar in database
+            ParameterizedStatement.executeOneUpdate(conn,
+                    "UPDATE users SET avatar=? WHERE userID=?;",
+                    newAvatar, this.userID);
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        
         return true;
     }
     public void setIsAdmin(boolean hasAdminPrivledges){
-        isAdmin = hasAdminPrivledges;
+        this.isAdmin = hasAdminPrivledges;
+        
+        try(var conn = java.sql.DriverManager.getConnection(
+                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
+            // update admin in database
+            ParameterizedStatement.executeOneUpdate(conn,
+                    "UPDATE users SET admin=? WHERE userID=?;",
+                    hasAdminPrivledges, this.userID);
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
     
     public PrivacySetting getPrivacy() {

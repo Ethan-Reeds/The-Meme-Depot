@@ -23,6 +23,11 @@ public class Login extends HttpServlet
             }
             else if (AccountManager.login(username,password)){
                 sess.setAttribute("username", username );
+                sess.setAttribute("account", 
+                        AccountManager.instance.getAccount(new SQLSearch(
+                                "username=? AND password=?;", 
+                                new Object[]{username, password}
+                        )));
                 pw.println("You are now logged in as:"+username);
                 pw.printf("True");
             }
@@ -33,5 +38,5 @@ public class Login extends HttpServlet
             }
         }
     }
-
 }
+

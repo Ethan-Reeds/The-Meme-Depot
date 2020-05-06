@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.HashSet;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -22,13 +23,13 @@ public class Register extends HttpServlet{
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException{
         resp.setContentType("text/plain");
         var pw = resp.getWriter();
+        var sess = req.getSession();
         var username = req.getParameter("username");
         var password = req.getParameter("password");
         var email = req.getParameter("email");
         var year = req.getParameter("year");
         var month = req.getParameter("month");
         var day = req.getParameter("day");
-        var phone = req.getParameter("phone");
         
         if(email != null) {
             String[] parts = email.split("@");
@@ -40,39 +41,28 @@ public class Register extends HttpServlet{
             }
         }
         
-        if (username == null && password == null) {
-            pw.println("No username or password provided");
-            pw.println("False");
-        } else if (username == null && password != null){
-            pw.println("No username provided");
-            pw.println("False");
-        } else if (username != null && password == null) {
-            pw.println("No password provided");
-            pw.println("False");
+        if(AccountManager.addUser(username, password, email, year, month, day)) {   // checks for missing parameters and duplicates
+            // add new account object
+            sess.setAttribute("account", new Account(username, password, email, year, month, day));
+            pw.println("Congrats you now have malware!");
+            pw.println("Username:"+username);
+            pw.println("Password:"+password);
+            pw.println("<br>");
+            pw.println("True");
+            //Actually log in
+            AccountManager.login(username, password);
+                
         } else {
-            //Check for duplicate username
-            if(AccountManager.instance.getUser(username) != null) {
+            // Check for duplicate username
+            if(AccountManager.instance.getAccount(new SQLSearch("username=?", new Object[]{username})) != null) {
                 //resp.sendError(409, "duplicate username");
                 pw.println("duplicate username");
                 pw.println("False");
                 return;
-            }
-            
-            if(AccountManager.addUser(username, password, email, year, month, day, phone)) {
-                pw.println("Congrats you now have malware!");
-                pw.println("Username:"+username);
-                pw.println("Password:"+password);
-                pw.println("<br>");
-                pw.println("True");
-                //Actually log in
-                AccountManager.login(username, password);
-                req.getSession().setAttribute("username", username );
-            }
-            else {
-                pw.println("Sorry bruh somethin aint qutite right");
+            } else {
+                pw.println("Sorry bruh somethin aint quite right");
                 pw.println("False");
             }
-        }    
     }
 
 }
