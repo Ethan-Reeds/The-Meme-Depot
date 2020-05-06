@@ -1,3 +1,10 @@
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -38,6 +45,17 @@ public class Account {
         privacy = PrivacySetting.Public;
         userID = nextID;
         nextID++;
+        
+        //Set default avatar
+        try {
+            BufferedImage bImage = ImageIO.read(new File("assets/default_avatar.png"));
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ImageIO.write(bImage, "png", bos);
+            avatar = bos.toByteArray();
+        } catch(IOException e) {
+            avatar = null;
+        }
+        
     }
     
     public int getUserID(){
