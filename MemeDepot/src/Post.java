@@ -23,27 +23,30 @@ public class Post {
         this.userID = userID;
         this.image = image;
         this.likes = 0;
-        
-        try(var conn = java.sql.DriverManager.getConnection(
-                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
-            var update = ParameterizedStatement.executeOneUpdate(conn, 
-                    "SELECT postID FROM posts WHERE userID=?;", 
-                    this.userID);
-            // sets postID to auto-incremented int from database
-            this.postID = update;
-        } catch(SQLException ex) {
-            throw new RuntimeException(ex);
-        }
+        this.post_date = 
+                new java.sql.Date(System.currentTimeMillis()).toString();
+        this.delete_date = null;
     }
     
     public static Post fromSQL(Map<String, ParameterizedStatement.Value> M) {
         return new Post(
-                M.get("userID").asInt(), 
-                M.get("image").asBlob()
+                M.get("userID").asInt(),
+                M.get("image").toString().getBytes()
         );
     }
     
     public int getPostID() {
+        try(var conn = java.sql.DriverManager.getConnection(
+                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
+            var query = ParameterizedStatement.executeOneQuery(conn, 
+                    "SELECT postID FROM posts WHERE userID=?;", 
+                    this.userID).getAll();
+            // sets postID to auto-incremented int from database
+            // get the value of key "postID" in 1st result of query as an int
+            this.postID = query.get(0).get("postID").asInt();
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
         return this.postID;
     }
     
@@ -62,7 +65,7 @@ public class Post {
                 SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
             // update image in database
             ParameterizedStatement.executeOneUpdate(conn,
-                    "UPDATE posts SET image=? WHERE postID=?",
+                    "UPDATE posts SET image=? WHERE postID=?;",
                     newImage, this.postID);
         } catch(SQLException ex) {
             throw new RuntimeException(ex);
@@ -80,7 +83,7 @@ public class Post {
                 SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
             // update likes in database
             ParameterizedStatement.executeOneUpdate(conn,
-                    "UPDATE posts SET likes=? WHERE postID=?",
+                    "UPDATE posts SET likes=? WHERE postID=?;",
                     this.likes, this.postID);
         } catch(SQLException ex) {
             throw new RuntimeException(ex);
@@ -94,7 +97,7 @@ public class Post {
                 SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
             // update likes in database
             ParameterizedStatement.executeOneUpdate(conn,
-                    "UPDATE posts SET likes=? WHERE postID=?",
+                    "UPDATE posts SET likes=? WHERE postID=?;",
                     this.likes, this.postID);
         } catch(SQLException ex) {
             throw new RuntimeException(ex);
@@ -116,7 +119,7 @@ public class Post {
                 SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
             // update delete date in database
             ParameterizedStatement.executeOneUpdate(conn,
-                    "UPDATE posts SET delete_date=? WHERE postID=?",
+                    "UPDATE posts SET delete_date=? WHERE postID=?;",
                     this.delete_date, this.postID);
         } catch(SQLException ex) {
             throw new RuntimeException(ex);

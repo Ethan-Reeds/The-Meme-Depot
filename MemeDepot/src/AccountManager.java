@@ -95,39 +95,35 @@ public class AccountManager {
     
     public static boolean verifyUser(String username, String password) {
         // returns true if username and password match existing account
-        boolean result = false;
         Account user = AccountManager.instance.getAccount(new SQLSearch(
                 "username=? AND password=?;", 
                 new Object[]{username, password}
         ));
         if(user != null) {
             // found matching account
-            result = true;
+            return true;
         }
-        return result;
+        else {
+            return false;
+        }
     }
     
     public int getUserID(Account acc){
-        int result = -1;   // returns -1 if account doesn't exist
         Account user = AccountManager.instance.getAccount(new SQLSearch(
-                "username=?;", 
-                new Object[]{acc.getUsername()}
+                "username=?;", new Object[]{acc.getUsername()}
         ));
-        result = user.getUserID();
-        return result;
+        return user.getUserID();
     }
     
     public String getEmail(Account acc){
-        String result = null;   // returns null if account doesn't exist
         Account user = AccountManager.instance.getAccount(new SQLSearch(
-                "userID=?;", 
-                new Object[]{acc.getUserID()}
+                "userID=?;", new Object[]{acc.getUserID()}
         ));
-        result = user.getEmail();
-        return result;
+        return user.getEmail();
     }
     
-    public static boolean addUser(String username, String password, String email, String year, String month, String day){
+    public static boolean addUser(String username, String password, String email, 
+            String year, String month, String day){
         // userID is auto incremented
         // admin is 0 by default
         // avatar is null by default
@@ -192,13 +188,10 @@ public class AccountManager {
     }
     
     public byte[] getAvatar(Account acc){
-        byte[] result = null;   // returns null if account doesn't exist
         Account user = AccountManager.instance.getAccount(new SQLSearch(
-                "userID=?;", 
-                new Object[]{acc.getUserID()}
+                "userID=?;", new Object[]{acc.getUserID()}
         ));
-        result = user.getAvatar();
-        return result;
+        return user.getAvatar();
     }
 
     public boolean setAvatar(Account acc, byte[] img ){
@@ -206,24 +199,24 @@ public class AccountManager {
         try(var conn = java.sql.DriverManager.getConnection(
                 SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
             ParameterizedStatement.executeOneUpdate(conn, 
-                    "UPDATE users SET avatar=? WHERE userID=?;", img, acc.getUserID());
+                    "UPDATE users SET avatar=? WHERE userID=?;", 
+                    img, acc.getUserID());
             // update avatar variable in Account object
-            acc.avatar = img;
-            
+            acc.setAvatar(img);
+            System.out.println(acc.getAvatar());
             return true;
-            
         } catch(SQLException ex) {
             throw new RuntimeException(ex);
         }
     }    
     
-    static void clear() {
+    public static void clear() {
         try(var conn = java.sql.DriverManager.getConnection(
                 SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
             ParameterizedStatement.executeOneUpdate(conn,
                     // deletes everything from users table
-                    "DELETE FROM users WHERE userID IS NOT NULL;"
-            );
+                    // all userIDs should be greater than -1
+                    "DELETE FROM users WHERE userID>?;", -1);
         } catch(SQLException ex) {
             throw new RuntimeException(ex);
         }

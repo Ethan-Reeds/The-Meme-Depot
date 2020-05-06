@@ -18,17 +18,6 @@ public class Tag {
     
     public Tag(String text) {
         this.text = text;
-        
-        try(var conn = java.sql.DriverManager.getConnection(
-                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
-            var update = ParameterizedStatement.executeOneUpdate(conn, 
-                    "SELECT tagID FROM tag_info WHERE text=?;", 
-                    this.text);
-            // sets this.tagID to auto-incremented int from database
-            this.tagID = update;
-        } catch(SQLException ex) {
-            throw new RuntimeException(ex);
-        }
     }
     
     public static Tag fromSQL(Map<String, ParameterizedStatement.Value> M) {
@@ -36,6 +25,17 @@ public class Tag {
     }
     
     public int getTagID() {
+        try(var conn = java.sql.DriverManager.getConnection(
+                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
+            var query = ParameterizedStatement.executeOneQuery(conn, 
+                    "SELECT tagID FROM tag_info WHERE text=?;", 
+                    this.text).getAll();
+            // sets postID to auto-incremented int from database
+            // get the value of key "tagID" in 1st result of query as an int
+            this.tagID = query.get(0).get("tagID").asInt();
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
         return this.tagID;
     }
     
@@ -50,7 +50,7 @@ public class Tag {
                 SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
             // update text in database
             ParameterizedStatement.executeOneUpdate(conn,
-                    "UPDATE tag_info SET text=? WHERE tagID=?",
+                    "UPDATE tag_info SET text=? WHERE tagID=?;",
                     newText, this.tagID);
         } catch(SQLException ex) {
             throw new RuntimeException(ex);

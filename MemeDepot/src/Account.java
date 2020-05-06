@@ -25,7 +25,7 @@ public class Account {
     protected int userID;       // auto-increments in database
     protected boolean isAdmin;  // default is false you can set it to true
     protected byte[] avatar;    // default is to NULL;
-    protected boolean loggedIn;
+    protected boolean loggedIn; // default is false
     
     public Account(String Username, String Password, String Email, String Year, 
             String Month, String Day){
@@ -35,17 +35,6 @@ public class Account {
         this.birthdate = Year + "-" + Month + "-" + Day;
         this.isAdmin = false;
         this.avatar = null;
-        
-        try(var conn = java.sql.DriverManager.getConnection(
-                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
-            var update = ParameterizedStatement.executeOneUpdate(conn, 
-                    "SELECT userID FROM users WHERE username=?;", 
-                    this.username);
-            // sets userID to auto-incremented int from database
-            this.userID = update;
-        } catch(SQLException ex) {
-            throw new RuntimeException(ex);
-        }
     }
     
     public static Account fromSQL(Map<String, ParameterizedStatement.Value> M) {
@@ -60,6 +49,17 @@ public class Account {
     }
     
     public int getUserID(){
+        try(var conn = java.sql.DriverManager.getConnection(
+                SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
+            var query = ParameterizedStatement.executeOneQuery(conn, 
+                    "SELECT userID FROM users WHERE username=?;", 
+                    this.username).getAll();
+            // sets userID to auto-incremented int from database
+            // get the value of key "userID" in 1st result of query as an int
+            this.userID = query.get(0).get("userID").asInt();
+        } catch(SQLException ex) {
+            throw new RuntimeException(ex);
+        }
         return this.userID;
     }
     
@@ -81,7 +81,7 @@ public class Account {
                 SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
             // update status in database
             ParameterizedStatement.executeOneUpdate(conn,
-                    "UPDATE users SET loggedIn=? WHERE userID=?",
+                    "UPDATE users SET loggedIn=? WHERE userID=?;",
                     status, this.userID);
         } catch(SQLException ex) {
             throw new RuntimeException(ex);
@@ -104,7 +104,7 @@ public class Account {
                 SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
             // update avatar in database
             ParameterizedStatement.executeOneUpdate(conn,
-                    "UPDATE users SET avatar=? WHERE userID=?",
+                    "UPDATE users SET avatar=? WHERE userID=?;",
                     newAvatar, this.userID);
         } catch(SQLException ex) {
             throw new RuntimeException(ex);
@@ -119,7 +119,7 @@ public class Account {
                 SQLAdminInfo.url, SQLAdminInfo.user, SQLAdminInfo.password)) {
             // update admin in database
             ParameterizedStatement.executeOneUpdate(conn,
-                    "UPDATE users SET admin=? WHERE userID=?",
+                    "UPDATE users SET admin=? WHERE userID=?;",
                     hasAdminPrivledges, this.userID);
         } catch(SQLException ex) {
             throw new RuntimeException(ex);
